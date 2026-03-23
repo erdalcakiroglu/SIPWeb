@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Account | SQL Performance Intelligence™</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page page-account">
+      <section id="message" class="message hidden" aria-live="polite"></section>
+
+      <article class="card account-shell" data-account-page="overview">
+        <header class="account-hero">
+          <div class="account-hero-copy">
+            <a href="/account" class="site-brand site-brand-hero">
+              <img src="/logo.svg" alt="" class="site-logo site-logo-hero" onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('site-logo-fallback')" />
+              <span class="site-logo-fallback eyebrow">SQL Performance Intelligence™</span>
+            </a>
+            <h1 class="page-title">License Overview</h1>
+            <p class="account-hero-text">
+              Review all active licenses, inspect license history, and open installed license tokens only when you need
+              them.
+            </p>
+
+            <div class="account-persona">
+              <div id="heroInitials" class="account-avatar">SP</div>
+              <div class="account-persona-copy">
+                <strong id="profileFullName" class="account-persona-name">-</strong>
+                <span id="heroEmail" class="account-persona-meta">-</span>
+                <div class="account-persona-tags">
+                  <span id="heroCompany" class="account-pill">-</span>
+                  <span id="profileJobHero" class="account-pill account-pill-soft">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="account-hero-panel">
+            <div class="account-panel-header">
+              <span id="heroStatusBadge" class="account-status-badge pending">Pending</span>
+              <span class="account-panel-note">Synced with your local SQL Performance Intelligence™ setup</span>
+            </div>
+
+            <div class="account-overview-grid">
+              <div class="overview-card">
+                <span class="overview-label">Active Licenses</span>
+                <strong id="heroActiveLicenseCount" class="overview-value">0</strong>
+              </div>
+              <div class="overview-card">
+                <span class="overview-label">Total Licenses</span>
+                <strong id="heroTotalLicenseCount" class="overview-value">0</strong>
+              </div>
+              <div class="overview-card">
+                <span class="overview-label">Created</span>
+                <strong id="heroCreatedAt" class="overview-meta">-</strong>
+              </div>
+              <div class="overview-card">
+                <span class="overview-label">Activated</span>
+                <strong id="heroActivatedAt" class="overview-meta">-</strong>
+              </div>
+            </div>
+
+            <button id="logoutButton" class="secondary-button account-logout-button" type="button">Log out</button>
+          </div>
+        </header>
+
+        <nav class="account-nav" aria-label="Account sections">
+          <a class="account-nav-link current" href="/account">License Overview</a>
+          <a class="account-nav-link" href="/account/activation-code">Generate Activation Code</a>
+          <a class="account-nav-link" href="/account/profile">Customer Information</a>
+          <a class="account-nav-link" href="/account/password">Change Password</a>
+        </nav>
+
+        <section class="account-single-column" aria-label="Account workspace">
+          <div class="account-main">
+            <section class="sub-card license-guide-card" aria-label="Offline license instructions">
+              <div class="section-heading">
+                <div>
+                  <h2 class="section-title">Offline .lic Download</h2>
+                  <p class="muted">
+                    Download a device-bound license file from the active records below, then import it in the desktop
+                    app.
+                  </p>
+                </div>
+                <span class="license-summary-chip license-summary-chip-muted">Settings &gt; License &gt; Import .lic</span>
+              </div>
+              <div class="license-guide-grid">
+                <div class="license-guide-callout">
+                  <strong>Use the same Device ID that SQL Performance Intelligence™ shows on the target machine.</strong>
+                  <p class="muted">
+                    The exported file is tied to that device. If the device fingerprint changes, download a new `.lic`
+                    file for the updated Device ID.
+                  </p>
+                </div>
+                <ol class="instruction-list">
+                  <li>Open SQL Performance Intelligence™ on the machine where you will use the license.</li>
+                  <li>Go to <strong>Settings &gt; License</strong>.</li>
+                  <li>Select <strong>Import .lic</strong>.</li>
+                  <li>Choose the downloaded file and confirm the import.</li>
+                </ol>
+              </div>
+            </section>
+
+            <section class="sub-card license-section" aria-label="Licenses">
+              <div class="section-heading">
+                <div>
+                  <h2 class="section-title">Licenses</h2>
+                  <p class="muted">All licenses with remaining time. Expired licenses are disabled. Use Detail to view or download.</p>
+                </div>
+                <span id="licenseCountBadge" class="license-summary-chip license-summary-chip-muted">0 licenses</span>
+              </div>
+              <div id="licenseList" class="license-list">
+                <div class="empty-state">No license has been assigned to this customer yet.</div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </article>
+    </main>
+
+    <div id="installedLicenseModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-installed-license="true"></div>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="installedLicenseModalTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="installedLicenseModalTitle" class="section-title">Installed License</h2>
+            <p class="muted">Open the full token only when you need to copy it.</p>
+          </div>
+          <button
+            id="closeInstalledLicenseModal"
+            class="secondary-button modal-close-button"
+            type="button"
+            data-close-installed-license="true"
+          >
+            Close
+          </button>
+        </div>
+
+        <pre id="installedLicenseModalValue" class="license-token-modal">-</pre>
+
+        <div class="modal-actions">
+          <button id="copyInstalledLicenseButton" class="primary-button" type="button">Copy Token</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="licenseDetailModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-license-detail="true"></div>
+      <section class="modal-card modal-card-license-detail" role="dialog" aria-modal="true" aria-labelledby="licenseDetailModalTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="licenseDetailModalTitle" class="section-title">License Detail</h2>
+            <p class="muted">View, download .lic, or delete (portal-created only).</p>
+          </div>
+          <button id="closeLicenseDetailModal" class="secondary-button modal-close-button" type="button" data-close-license-detail="true">Close</button>
+        </div>
+        <div id="licenseDetailContent" class="license-detail-modal-body"></div>
+      </section>
+    </div>
+
+    <div id="deleteLicenseModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-delete-license-modal="true"></div>
+      <section class="modal-card modal-card-compact" role="dialog" aria-modal="true" aria-labelledby="deleteLicenseModalTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="deleteLicenseModalTitle" class="section-title">Delete License</h2>
+            <p class="muted">This only removes licenses created from the customer portal.</p>
+          </div>
+        </div>
+
+        <div class="confirm-body">
+          <p class="confirm-copy">
+            The selected license record, linked activation codes, saved device bindings, and related portal events will
+            be removed.
+          </p>
+          <strong id="deleteLicenseModalName" class="confirm-license-name">-</strong>
+        </div>
+
+        <div class="modal-actions modal-actions-between">
+          <button
+            id="cancelDeleteLicenseButton"
+            class="secondary-button"
+            type="button"
+            data-close-delete-license-modal="true"
+          >
+            Cancel
+          </button>
+          <button id="confirmDeleteLicenseButton" class="danger-button" type="button">Delete License</button>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer" aria-label="Product info">
+      <a class="app-footer-link" href="https://sqlperformance.ai" target="_blank" rel="noopener">sqlperformance.ai</a>
+      <span class="app-footer-version">v<span id="appVersion">0.1.0</span></span>
+    </footer>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

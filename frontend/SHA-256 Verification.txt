@@ -1,0 +1,37 @@
+HA-256 doğrulaması artık gerçek hash ile çalışıyor ve kullanıcılar için net adımlar var. Yapılanlar:
+
+1. SHA-256’yı gerçek EXE’den üretme
+Script: scripts/compute-sha256.js
+
+public/downloads/SQL Performance Intelligence.exe dosyasını okur.
+SHA-256 hash’ini hesaplar.
+Sonucu app/download/release.json içine yazar (sha256, mevcut version ve released korunur).
+NPM script: npm run download:hash
+
+Yukarıdaki script’i çalıştırır.
+Veri dosyası: app/download/release.json
+
+Varsayılan: sha256: "".
+npm run download:hash çalıştırıldıktan sonra gerçek hash burada olur ve Download sayfası build’te bunu kullanır.
+2. Download sayfasında kullanım
+Hash gösterimi:
+
+release.json’daki sha256 doluysa: hash gösterilir, yanında “Copy hash” butonu vardır.
+Boşsa: “Hash not yet generated…” uyarısı ve npm run download:hash çalıştırma talimatı gösterilir.
+Sürüm bilgisi:
+
+Version ve Released alanları release.json’dan okunuyor (release.version, release.released).
+“How to verify (Windows)” bölümü:
+
+4 maddelik adımlar: indir → klasöre git → certUtil -hashfile "SQL Performance Intelligence.exe" SHA256 çalıştır → hash’i karşılaştır.
+Komut tek satırda gösteriliyor ve “Copy command” ile panoya kopyalanabiliyor.
+Copy butonları:
+
+app/download/CopyButton.tsx (client component): hash veya certUtil komutunu kopyalar, “Copied!” geri bildirimi verir.
+3. Sizin kullanım akışı
+Yeni kurulum dosyasını public/downloads/SQL Performance Intelligence.exe olarak koyun.
+Proje kökünde: npm run download:hash çalıştırın.
+npm run build (veya deploy) yapın.
+Böylece Download sayfasında her zaman o EXE’ye ait güncel SHA-256 görünür ve kullanıcılar “How to verify” adımları + “Copy hash” / “Copy command” ile doğrulamayı rahatça yapabilir.
+
+README’ye de “İndirilebilir EXE ve SHA-256” başlığı altında bu akış kısaca eklendi.

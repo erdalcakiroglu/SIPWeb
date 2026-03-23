@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate Activation Code | SQL Performance Intelligence™</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page page-account">
+      <section id="message" class="message hidden" aria-live="polite"></section>
+
+      <article class="card account-shell" data-account-page="activation-code">
+        <header class="account-hero">
+          <div class="account-hero-copy">
+            <a href="/account" class="site-brand site-brand-hero">
+              <img src="/logo.svg" alt="" class="site-logo site-logo-hero" onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('site-logo-fallback')" />
+              <span class="site-logo-fallback eyebrow">SQL Performance Intelligence™</span>
+            </a>
+            <h1 class="page-title">Generate Activation Code</h1>
+            <p class="account-hero-text">
+              Issue a new device code without leaving the customer portal. Existing license records are available in
+              the selector.
+            </p>
+
+            <div class="account-persona">
+              <div id="heroInitials" class="account-avatar">SP</div>
+              <div class="account-persona-copy">
+                <strong id="profileFullName" class="account-persona-name">-</strong>
+                <span id="heroEmail" class="account-persona-meta">-</span>
+                <div class="account-persona-tags">
+                  <span id="heroCompany" class="account-pill">-</span>
+                  <span id="profileJobHero" class="account-pill account-pill-soft">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="account-hero-panel">
+            <div class="account-panel-header">
+              <span id="heroStatusBadge" class="account-status-badge pending">Pending</span>
+              <span class="account-panel-note">Synced with your local SQL Performance Intelligence™ setup</span>
+            </div>
+
+            <div class="account-overview-grid">
+              <div class="overview-card">
+                <span class="overview-label">Active Licenses</span>
+                <strong id="heroActiveLicenseCount" class="overview-value">0</strong>
+              </div>
+              <div class="overview-card">
+                <span class="overview-label">Total Licenses</span>
+                <strong id="heroTotalLicenseCount" class="overview-value">0</strong>
+              </div>
+              <div class="overview-card">
+                <span class="overview-label">Created</span>
+                <strong id="heroCreatedAt" class="overview-meta">-</strong>
+              </div>
+              <div class="overview-card">
+                <span class="overview-label">Activated</span>
+                <strong id="heroActivatedAt" class="overview-meta">-</strong>
+              </div>
+            </div>
+
+            <button id="logoutButton" class="secondary-button account-logout-button" type="button">Log out</button>
+          </div>
+        </header>
+
+        <nav class="account-nav" aria-label="Account sections">
+          <a class="account-nav-link" href="/account">License Overview</a>
+          <a class="account-nav-link current" href="/account/activation-code">Generate Activation Code</a>
+          <a class="account-nav-link" href="/account/profile">Customer Information</a>
+          <a class="account-nav-link" href="/account/password">Change Password</a>
+        </nav>
+
+        <section class="account-single-column">
+          <section class="sub-card account-focus-card" aria-label="Generate activation code">
+            <div class="section-heading">
+              <div>
+                <h2 class="section-title">Generate Activation Code</h2>
+                <p class="muted">Create a new code for a device without calling the API manually.</p>
+              </div>
+            </div>
+            <form id="activationCodeForm" class="form">
+              <label>
+                <span>License Record</span>
+                <select id="activationLicenseId" name="licenseId">
+                  <option value="">Create new license record</option>
+                </select>
+              </label>
+              <div class="two-column">
+                <label>
+                  <span>Device ID</span>
+                  <input name="deviceId" type="text" placeholder="APP-DEVICE-001" required />
+                </label>
+                <label>
+                  <span>License Name</span>
+                  <input name="licenseName" type="text" value="Desktop License" />
+                </label>
+              </div>
+              <label>
+                <span>Server URL</span>
+                <input id="activationServerUrl" name="serverUrl" type="url" />
+              </label>
+              <button class="primary-button" type="submit">Generate Activation Code</button>
+            </form>
+            <div id="activationCodeResult" class="generated-code hidden" aria-live="polite">
+              <span class="generated-code-label">Generated Code</span>
+              <strong id="activationCodeValue" class="generated-code-value">-</strong>
+            </div>
+            <div id="activationCodeMeta" class="generated-code-meta hidden">
+              <div class="generated-code-meta-item">
+                <span>Status</span>
+                <strong id="activationCodeStatus">-</strong>
+              </div>
+              <div class="generated-code-meta-item">
+                <span>Issued At</span>
+                <strong id="activationCodeIssuedAt">-</strong>
+              </div>
+              <div class="generated-code-meta-item">
+                <span>Expires At</span>
+                <strong id="activationCodeExpiresAt">-</strong>
+              </div>
+            </div>
+          </section>
+        </section>
+      </article>
+    </main>
+
+    <footer class="app-footer" aria-label="Product info">
+      <a class="app-footer-link" href="https://sqlperformance.ai" target="_blank" rel="noopener">sqlperformance.ai</a>
+      <span class="app-footer-version">v<span id="appVersion">0.1.0</span></span>
+    </footer>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login | SQL Performance Intelligence™</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page page-narrow">
+      <section id="message" class="message hidden" aria-live="polite"></section>
+
+      <article class="card auth-card">
+        <a href="/" class="site-brand">
+          <img src="/logo.svg" alt="" class="site-logo" onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('site-logo-fallback')" />
+          <span class="site-logo-fallback eyebrow">SQL Performance Intelligence™</span>
+        </a>
+        <h1 class="page-title">Admin Login</h1>
+        <p class="muted">Use the admin credentials configured in the backend environment.</p>
+        <form id="adminLoginForm" class="form">
+          <label>
+            <span>Admin Email</span>
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input name="password" type="password" required />
+          </label>
+          <button class="primary-button" type="submit">Open Admin Panel</button>
+        </form>
+        <p class="link-row">
+          <a class="text-link" href="/">Customer Login</a>
+        </p>
+      </article>
+    </main>
+
+    <footer class="app-footer" aria-label="Product info">
+      <a class="app-footer-link" href="https://sqlperformance.ai" target="_blank" rel="noopener">sqlperformance.ai</a>
+      <span class="app-footer-version">v<span id="appVersion">0.1.0</span></span>
+    </footer>
+    <script src="/admin.js" defer></script>
+  </body>
+</html>
