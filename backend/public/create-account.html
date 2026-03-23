@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account | SQL Performance Intelligence™</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page page-narrow">
+      <section id="message" class="message hidden" aria-live="polite"></section>
+
+      <article class="card auth-card">
+        <a class="back-link" href="/">Back to Login</a>
+        <a href="/" class="site-brand">
+          <img src="/logo.svg" alt="" class="site-logo" onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('site-logo-fallback')" />
+          <span class="site-logo-fallback eyebrow">SQL Performance Intelligence™</span>
+        </a>
+        <h1 class="page-title">Create Account</h1>
+        <p class="muted">Complete the form below to create a new customer account.</p>
+        <form id="registerForm" class="form">
+          <div class="two-column">
+            <label>
+              <span>Name</span>
+              <input name="name" type="text" required />
+            </label>
+            <label>
+              <span>Surname</span>
+              <input name="surname" type="text" required />
+            </label>
+          </div>
+          <label>
+            <span>Job</span>
+            <input name="job" type="text" required />
+          </label>
+          <label>
+            <span>Email Address</span>
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            <span>Phone</span>
+            <input name="phone" type="tel" required />
+          </label>
+          <label>
+            <span>Company Name</span>
+            <input name="companyName" type="text" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input name="password" type="password" minlength="8" required />
+          </label>
+          <button class="primary-button" type="submit">Create Account</button>
+        </form>
+      </article>
+    </main>
+
+    <footer class="app-footer" aria-label="Product info">
+      <a class="app-footer-link" href="https://sqlperformance.ai" target="_blank" rel="noopener">sqlperformance.ai</a>
+      <span class="app-footer-version">v<span id="appVersion">0.1.0</span></span>
+    </footer>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

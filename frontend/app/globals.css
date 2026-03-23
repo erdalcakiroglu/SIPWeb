@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #0e8a9d;
+  --primary-dark: #0a5f6f;
+  --primary-light: #e4f4f7;
+  --primary-gradient-from: #0b6c79;
+  --primary-gradient-to: #1aa4b4;
+  --cta: #0F766E;
+  --cta-hover: #115E59;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+/* Toggle switch custom styles */
+.toggle-switch {
+  @apply relative inline-flex h-[30px] w-[56px] cursor-pointer;
+}
+
+.toggle-switch input {
+  @apply opacity-0 w-0 h-0;
+}
+
+.toggle-slider {
+  @apply absolute inset-0 bg-gray-200 rounded-full transition-all duration-300;
+}
+
+.toggle-slider::before {
+  content: '';
+  @apply absolute h-6 w-6 left-[3px] bottom-[3px] bg-white rounded-full transition-all duration-300 shadow-md;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  @apply bg-gradient-to-r from-primary to-primary-dark;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(26px);
+}
+
+/* Grid pattern background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+}

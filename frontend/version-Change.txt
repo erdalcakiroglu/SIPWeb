@@ -1,0 +1,13 @@
+Release version nereden geliyor?
+Kaynak: app/download/release.json
+Download sayfası bu dosyayı import ediyor; version, released ve sha256 hep oradan okunuyor.
+
+Şu an: Bu değerler release.json içinde elle veya script ile güncelleniyor; package.json veya başka bir yer kullanılmıyor.
+Script: npm run download:hash yalnızca sha256 alanını EXE’den hesaplayıp yazıyor; version ve released’e dokunmuyor (mevcut değerler kalıyor).
+Yapılan ek geliştirme
+Script artık version ve released’i komut satırından da alabiliyor; böylece tek komutla hepsini güncelleyebilirsiniz:
+
+npm run download:hash -- --version 2.4.3 --released 2026-03-15
+--version ve --released verirseniz → hash + bu iki alan güncellenir.
+Vermezseniz → sadece hash güncellenir; version/released release.json’daki haliyle kalır.
+README’de bu akış ve “release version nereden geliyor” açıklaması güncellendi.

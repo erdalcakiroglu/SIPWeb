@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4fe3e1cc-b075-47a5-a98f-06a1f9e9b039" name="Changes" comment="First Commit">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.env.example" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/backend-licensing_v2.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/data/SQLPerf.db" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/data/SQLPerf.db-shm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/data/SQLPerf.db-wal" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/data/license-keys/ed25519-private.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/data/license-keys/ed25519-public.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/data/mail-outbox.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/data/sessions/11pbmdA9y-Jwi9m4HE83MjDBkmO8wCFL.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/data/sessions/jRFbdquG3BYqitQiO1IBf3At3ozQPCmn.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/docs/UI-UX-ANALIZ.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/license-architecture-01.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/account-activation-code.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/account-password.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/account-profile.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/account.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/activate-account.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/admin-login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/admin.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/admin.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/app.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/create-account.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/favicon.original.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/public/styles.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/app.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/config/env.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/admin.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/customers.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/db.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/license-signing.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/licenses.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/mailer.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/password.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/schemas.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/validation.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/lib/version.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/middleware/errorHandler.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/middleware/rateLimit.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/middleware/validate.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/routes/admin.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/routes/auth.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/routes/license.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/server.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/types/express-session.d.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/types/session-file-store.d.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/tsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/Object_Explorer_Module_Technical_Documentation_EN (1).md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/SHA-256 Verification.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/analytics-disclosure/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/contact/ContactForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/contact/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/cookie-policy/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/[slug]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/blocking_analysis.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/dashboard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/data.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/getting_started_page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/index_advisor.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/installation.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/installation/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/mobile-menu.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/[slug]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/blocking-analysis/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/dashboard/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/index-advisor/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/module_page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/object-explorer/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/query-statistics/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/scheduled-jobs/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/security-audit/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/modules/wait-statistics/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/object_explorer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/overview.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/overview/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/query_statistics.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/quickstart.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/quickstart/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/right_menu.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/scheduled_jobs.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/security_audit.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/templates.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/docs/wait_statistics.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/download/CopyButton.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/download/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/download/release.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/faq/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/features/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/globals.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/privacy/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/privacy/privacy.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/sample-report/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/security/DataBoundaryPanel.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/security/ProviderToggle.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/security/SendPolicyControls.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/security/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/sitemap.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/terms/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/AIShowcase.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/CTA.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/CookieConsent.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/CookiePreferencesLink.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Features.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Footer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Header.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Hero.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Pricing.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/Security.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/components/TrustBar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/01-object_explorer.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/02-query_statistics.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/03-scheduled_jobs.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/04-index_advisor.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/05-security_audit.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/06-wait_statistics.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/07-dashboard.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/08-blocking_analysis.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/docs/settings.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/eslint.config.mjs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/next.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/postcss.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/downloads/SQL Performance Intelligence.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/robots.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/scripts/compute-sha256.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/scripts/deploy.ps1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/tailwind.config.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/uygulama-yardim-kilavuzu.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/version-Change.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/start-dev.ps1" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="PATH_TO_GIT" value="C:\Program Files\Git\bin\git.exe" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "erdalcakiroglu"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/erdalcakiroglu/SIPWeb.git",
+    "accountId": "fc38d788-6848-46eb-9709-43134a9d9c01"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="3BLKm5wL8z1jqMg9UdFwYKLa1A9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/erdal.cakiroglu/PycharmProjects/SPStudioProWeb-v2.2",
+    "settings.editor.selected.configurable": "vcs.Git"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-ca5e2b39c7df-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.308" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4fe3e1cc-b075-47a5-a98f-06a1f9e9b039" name="Changes" comment="" />
+      <created>1774263065717</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1774263065717</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="First Commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="First Commit" />
+  </component>
+</project>

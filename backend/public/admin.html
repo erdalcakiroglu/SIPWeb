@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel | SQL Performance Intelligence™</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page page-admin">
+      <section id="message" class="message hidden" aria-live="polite"></section>
+
+      <article class="card admin-shell">
+        <header class="section-heading admin-header">
+          <div>
+            <a href="/admin" class="site-brand site-brand-admin">
+              <img src="/logo.svg" alt="" class="site-logo site-logo-admin" onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('site-logo-fallback')" />
+              <span class="site-logo-fallback eyebrow">SQL Performance Intelligence™</span>
+            </a>
+            <h1 class="page-title">Admin Panel</h1>
+            <p class="muted">Track customers, licenses, activation codes, and recent license activity.</p>
+          </div>
+          <div class="admin-toolbar">
+            <span id="adminIdentity" class="admin-identity">-</span>
+            <button id="adminRefreshButton" class="secondary-button" type="button">Refresh</button>
+            <button id="adminLogoutButton" class="secondary-button" type="button">Log out</button>
+          </div>
+        </header>
+
+        <section class="metric-grid" aria-label="Admin summary">
+          <article class="metric-card">
+            <span class="metric-label">Customers</span>
+            <strong id="metricCustomers" class="metric-value">0</strong>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">Active Customers</span>
+            <strong id="metricActiveCustomers" class="metric-value">0</strong>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">Licenses</span>
+            <strong id="metricLicenses" class="metric-value">0</strong>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">Active Licenses</span>
+            <strong id="metricActiveLicenses" class="metric-value">0</strong>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">Open Activation Codes</span>
+            <strong id="metricActivationCodes" class="metric-value">0</strong>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">Active Devices</span>
+            <strong id="metricDevices" class="metric-value">0</strong>
+          </article>
+        </section>
+
+        <section class="sub-card">
+          <div class="section-heading">
+            <div>
+              <h2 class="section-title">Customers</h2>
+              <p class="muted">Select a customer to inspect licenses and activation history.</p>
+            </div>
+            <label class="search-field">
+              <span>Search</span>
+              <input id="customerSearchInput" type="search" placeholder="Search by name, email, or company" />
+            </label>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Email</th>
+                  <th>Company</th>
+                  <th>Status</th>
+                  <th>Licenses</th>
+                  <th>Created</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="customerTableBody">
+                <tr>
+                  <td colspan="7" class="table-empty">No customers found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="customerDetailSection" class="sub-card admin-detail hidden">
+          <div class="section-heading">
+            <div>
+              <h2 id="customerDetailTitle" class="section-title">Customer Detail</h2>
+              <p id="customerDetailSubtitle" class="muted">Select a customer from the table above.</p>
+            </div>
+            <div class="admin-detail-actions">
+              <button id="editCustomerButton" class="secondary-button" type="button">Edit Customer</button>
+              <button id="cancelEditCustomerButton" class="secondary-button hidden" type="button">Cancel</button>
+              <button id="saveCustomerButton" class="primary-button hidden" type="button">Save Changes</button>
+              <button id="deleteCustomerButton" class="danger-button" type="button">Delete Customer</button>
+            </div>
+          </div>
+
+          <article class="detail-card admin-detail-frame">
+            <section class="admin-detail-section">
+              <div class="admin-detail-section-header">
+                <h3 id="customerProfileCardTitle" class="license-block-title">Customer Profile</h3>
+              </div>
+              <div id="customerProfileDetail" class="detail-fields"></div>
+            </section>
+
+            <section class="admin-detail-section">
+              <div class="admin-detail-section-header">
+                <h3 class="license-block-title">License Snapshot</h3>
+              </div>
+              <div id="customerLicenseSnapshot" class="license-stack">
+                <div class="empty-state">No license records found for this customer.</div>
+              </div>
+            </section>
+
+            <section class="admin-detail-section">
+              <div class="admin-detail-section-header">
+                <h3 class="license-block-title">Recent Activation Codes</h3>
+              </div>
+              <div class="table-wrap table-wrap-compact">
+                <table class="record-table">
+                  <thead>
+                    <tr>
+                      <th>Code</th>
+                      <th>License</th>
+                      <th>Status</th>
+                      <th>Device ID</th>
+                      <th>Issued</th>
+                      <th>Expires</th>
+                    </tr>
+                  </thead>
+                  <tbody id="activationCodeTableBody">
+                    <tr>
+                      <td colspan="6" class="table-empty">No activation code history for this customer.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="admin-detail-section">
+              <div class="admin-detail-section-header">
+                <h3 class="license-block-title">Recent License Events</h3>
+              </div>
+              <div id="licenseEventList" class="record-list">
+                <div class="empty-state">No recent license events for this customer.</div>
+              </div>
+            </section>
+          </article>
+        </section>
+      </article>
+    </main>
+
+    <div id="deleteCustomerModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-delete-customer-modal="true"></div>
+      <section class="modal-card modal-card-compact" role="dialog" aria-modal="true" aria-labelledby="deleteCustomerModalTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="deleteCustomerModalTitle" class="section-title">Delete Customer</h2>
+            <p class="muted">This action cannot be undone.</p>
+          </div>
+        </div>
+
+        <div class="confirm-body">
+          <p class="confirm-copy">The selected customer and all related licenses, devices, activation codes, and events will be removed.</p>
+          <strong id="deleteCustomerModalEmail" class="confirm-email">-</strong>
+        </div>
+
+        <div class="modal-actions modal-actions-between">
+          <button
+            id="cancelDeleteCustomerButton"
+            class="secondary-button"
+            type="button"
+            data-close-delete-customer-modal="true"
+          >
+            Cancel
+          </button>
+          <button id="confirmDeleteCustomerButton" class="danger-button" type="button">Delete Customer</button>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer" aria-label="Product info">
+      <a class="app-footer-link" href="https://sqlperformance.ai" target="_blank" rel="noopener">sqlperformance.ai</a>
+      <span class="app-footer-version">v<span id="appVersion">0.1.0</span></span>
+    </footer>
+    <script src="/admin.js" defer></script>
+  </body>
+</html>
