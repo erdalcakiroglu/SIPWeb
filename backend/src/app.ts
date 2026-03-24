@@ -2,7 +2,8 @@ import path from 'node:path'
 import express from 'express'
 import session from 'express-session'
 import cors from 'cors'
-import FileStore from 'session-file-store'
+import Database from 'better-sqlite3'
+import SqliteStore from 'better-sqlite3-session-store'
 import { env } from './config/env'
 import { getVersionInfo } from './lib/version'
 import { authRouter } from './routes/auth'
@@ -15,8 +16,6 @@ import {
   licenseSensitiveLimiter,
   adminLoginLimiter,
 } from './middleware/rateLimit'
-
-const FileStoreSession = FileStore(session)
 
 export function createApp() {
   const app = express()
@@ -54,9 +53,14 @@ export function createApp() {
 
   app.use(express.json())
 
-  const sessionStore = new FileStoreSession({
-    path: path.join(env.dataDir, 'sessions'),
-    ttl: 60 * 60 * 24,
+  const SqliteStoreSession = SqliteStore(session)
+  const db = new Database(path.join(env.dataDir, 'sessions.db'))
+  const sessionStore = new SqliteStoreSession({
+    client: db,
+    expired: {
+      clear: true,
+      intervalMs: 1000 * 60 * 60,
+    },
   })
 
   app.use(
