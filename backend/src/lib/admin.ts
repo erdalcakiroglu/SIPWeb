@@ -503,3 +503,105 @@ export function updateAdminLicense(
   // Return updated license
   return getAdminCustomerDetail(license.customer_id)
 }
+
+/**
+ * Create a new license for a customer.
+ * Checks that customer hasn't exceeded maxLicenses limit.
+ */
+export function createAdminLicense(
+  customerId: number,
+  input: {
+    licenseName?: unknown
+    expiresAt?: unknown
+  },
+) {
+  const customer = requireCustomerRecord(customerId)
+
+  // Check current license count
+  const licenseCountRow = db
+    .prepare('SELECT COUNT(*) as count FROM Licenses WHERE customer_id = ? AND status IN (?, ?)')
+    .get(customer.id, 'active', 'trial_active') as { count: number }
+
+  // Get maxLicenses from customer record
+  const maxLicensesRow = db
+    .prepare('SELECT max_licenses FROM Customers WHERE id = ?')
+    .get(customer.id) as { max_licenses: number } | undefined
+
+  const maxLicenses = maxLicensesRow?.max_licenses || 1
+  const currentLicenseCount = licenseCountRow.count || 0
+
+  if (currentLicenseCount >= maxLicenses) {
+    throw new Error(
+      `Customer has reached maximum licenses limit (${maxLicenses}). Current: ${currentLicenseCount}`,
+    )
+  }
+
+  // Parse license name (default: generate from customer info)
+  let licenseName = `${customer.email} - License ${currentLicenseCount + 1}`
+  if (input.licenseName !== undefined && input.licenseName !== null) {
+    licenseName = String(input.licenseName).trim()
+    if (!licenseName) {
+      throw new Error('License name cannot be empty.')
+    }
+  }
+
+  // Parse expires_at if provided
+  let expiresAt: string | null = null
+  if (input.expiresAt !== undefined && input.expiresAt !== null) {
+    const expiresAtStr = String(input.expiresAt).trim()
+    const expiresAtDate = new Date(expiresAtStr)
+
+    if (Number.isNaN(expiresAtDate.getTime())) {
+      throw new Error('Invalid date format. Use ISO format (YYYY-MM-DD or ISO 8601).')
+    }
+
+    expiresAt = expiresAtDate.toISOString()
+  }
+
+  const now = new Date().toISOString()
+
+  // Create new license
+  db.exec('BEGIN')
+
+  try {
+    const result = db
+      .prepare(`
+        INSERT INTO Licenses (
+          customer_id,
+          license_name,
+          license_type,
+          status,
+          starts_at,
+          expires_at,
+          license_count,
+          allowed_devices,
+          license_email,
+          created_via,
+          created_at,
+          updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `)
+      .run(
+        customer.id,
+        licenseName,
+        'commercial',
+        'active',
+        now,
+        expiresAt,
+        1,
+        1,
+        customer.email,
+        'admin-portal',
+        now,
+        now,
+      )
+
+    db.exec('COMMIT')
+  } catch (error) {
+    db.exec('ROLLBACK')
+    throw error
+  }
+
+  // Return updated customer detail
+  return getAdminCustomerDetail(customer.id)
+}

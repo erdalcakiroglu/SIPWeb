@@ -5,6 +5,7 @@ import { validateBody } from '../middleware/validate'
 import { csrfProtection, getCsrfToken } from '../middleware/csrf'
 import {
   authenticateAdmin,
+  createAdminLicense,
   deleteAdminCustomer,
   getAdminCustomerDetail,
   getAdminDashboardData,
@@ -145,6 +146,24 @@ adminRouter.patch('/customers/:customerId/licenses/:licenseId', (request, respon
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'License update failed.'
+    const statusCode = message.includes('not found') ? 404 : message === 'Admin authentication required.' ? 401 : 400
+    response.status(statusCode).json({ message })
+  }
+})
+
+adminRouter.post('/customers/:customerId/licenses', (request, response) => {
+  try {
+    requireAdminSession(request)
+    const customerId = Number.parseInt(request.params.customerId, 10)
+    const detail = createAdminLicense(customerId, request.body ?? {})
+
+    response.json({
+      message: `New license has been created for customer ${customerId}.`,
+      detail,
+      csrfToken: getCsrfToken(request),
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'License creation failed.'
     const statusCode = message.includes('not found') ? 404 : message === 'Admin authentication required.' ? 401 : 400
     response.status(statusCode).json({ message })
   }
