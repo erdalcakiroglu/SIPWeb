@@ -246,6 +246,97 @@ X-CSRF-Token: <csrf-token>
 
 ### License Management
 
+#### Create License
+**Endpoint:** `POST /api/admin/customers/:customerId/licenses`
+
+**Headers:**
+```
+X-CSRF-Token: <csrf-token>
+Content-Type: application/json
+```
+
+**URL Parameters:**
+- `customerId` (integer) - Customer ID
+
+**Request Body (Optional):**
+```json
+{
+  "licenseName": "Development License",
+  "expiresAt": "2026-12-31T23:59:59Z"
+}
+```
+
+Fields are optional:
+- `licenseName` (string) - Display name for the license. If not provided, generates default name with customer email and counter
+- `expiresAt` (string, ISO 8601) - License expiration date. If not provided, no expiration is set
+
+**Response (200 OK):**
+```json
+{
+  "message": "New license has been created for customer 1.",
+  "detail": {
+    "customer": {...},
+    "licenses": [
+      {
+        "id": 12346,
+        "publicId": "lic_012346",
+        "licenseName": "Development License",
+        "email": "john@example.com",
+        "status": "active",
+        "createdAt": "2024-02-01T16:45:00Z",
+        "expiresAt": "2026-12-31T23:59:59Z",
+        "updatedAt": "2024-02-01T16:45:00Z"
+      }
+    ],
+    "activationCodes": [...],
+    "events": [...]
+  },
+  "csrfToken": "token-string"
+}
+```
+
+**Errors:**
+- `400 Bad Request` - Validation failed (invalid date format, empty license name, etc.)
+- `400 Bad Request` - Customer has reached maximum licenses limit
+- `404 Not Found` - Customer not found
+- `401 Unauthorized` - Admin not authenticated
+
+**Validation Rules:**
+- Customer cannot exceed their `maxLicenses` limit (set by admin in customer settings)
+- License name cannot be empty
+- `expiresAt` must be valid ISO 8601 format if provided
+
+**Examples:**
+
+Create license with default name and no expiration:
+```bash
+curl -X POST http://localhost:3000/api/admin/customers/1/licenses \
+  -H "X-CSRF-Token: token-string" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+Create license with custom name and expiration:
+```bash
+curl -X POST http://localhost:3000/api/admin/customers/1/licenses \
+  -H "X-CSRF-Token: token-string" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "licenseName": "Production License",
+    "expiresAt": "2026-12-31T23:59:59Z"
+  }'
+```
+
+Create license with only expiration:
+```bash
+curl -X POST http://localhost:3000/api/admin/customers/1/licenses \
+  -H "X-CSRF-Token: token-string" \
+  -H "Content-Type: application/json" \
+  -d '{"expiresAt": "2025-12-31T23:59:59Z"}'
+```
+
+---
+
 #### Update License
 **Endpoint:** `PATCH /api/admin/customers/:customerId/licenses/:licenseId`
 
