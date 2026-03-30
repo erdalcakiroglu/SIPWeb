@@ -54,6 +54,7 @@ function hideMessage() {
 
 async function requestJson(url, options = {}) {
   const response = await fetch(url, {
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
