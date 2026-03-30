@@ -2,26 +2,26 @@ import type { Request } from 'express'
 import { Router } from 'express'
 import { adminLoginLimiter } from '../middleware/rateLimit'
 import { validateBody } from '../middleware/validate'
+import { csrfProtection, getCsrfToken } from '../middleware/csrf'
 import {
   authenticateAdmin,
   deleteAdminCustomer,
   getAdminCustomerDetail,
   getAdminDashboardData,
   updateAdminCustomer,
+  updateAdminLicense,
 } from '../lib/admin'
 import { adminLoginSchema } from '../lib/schemas'
 
 export const adminRouter = Router()
 
-function requireAdminSession(request: Request) {
-  if (!request.session.adminAuthenticated) {
-    throw new Error('Admin authentication required.')
-  }
-}
-
 adminRouter.get('/me', (request, response) => {
   if (!request.session.adminAuthenticated) {
-    response.json({ authenticated: false, admin: null })
+    response.json({ 
+      authenticated: false, 
+      admin: null,
+      csrfToken: getCsrfToken(request),
+    })
     return
   }
 
@@ -30,9 +30,11 @@ adminRouter.get('/me', (request, response) => {
     admin: {
       email: request.session.adminEmail ?? null,
     },
+    csrfToken: getCsrfToken(request),
   })
 })
 
+// Login endpoint - NO CSRF required (admin not authenticated yet)
 adminRouter.post('/login', adminLoginLimiter, validateBody(adminLoginSchema), (request, response) => {
   try {
     const admin = authenticateAdmin(request.body.email, request.body.password)
@@ -43,12 +45,22 @@ adminRouter.post('/login', adminLoginLimiter, validateBody(adminLoginSchema), (r
     response.json({
       message: 'Admin login successful.',
       admin,
+      csrfToken: getCsrfToken(request),
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Admin login failed.'
     response.status(400).json({ message })
   }
 })
+
+// Apply CSRF protection to all other admin routes (except login)
+adminRouter.use(csrfProtection)
+
+function requireAdminSession(request: Request) {
+  if (!request.session.adminAuthenticated) {
+    throw new Error('Admin authentication required.')
+  }
+}
 
 adminRouter.post('/logout', (request, response) => {
   request.session.adminAuthenticated = undefined
@@ -60,7 +72,10 @@ adminRouter.post('/logout', (request, response) => {
 adminRouter.get('/dashboard', (request, response) => {
   try {
     requireAdminSession(request)
-    response.json(getAdminDashboardData())
+    response.json({
+      ...getAdminDashboardData(),
+      csrfToken: getCsrfToken(request),
+    })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Dashboard request failed.'
     response.status(401).json({ message })
@@ -71,7 +86,10 @@ adminRouter.get('/customers/:customerId', (request, response) => {
   try {
     requireAdminSession(request)
     const customerId = Number.parseInt(request.params.customerId, 10)
-    response.json(getAdminCustomerDetail(customerId))
+    response.json({
+      ...getAdminCustomerDetail(customerId),
+      csrfToken: getCsrfToken(request),
+    })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Customer lookup failed.'
     const statusCode = message === 'Customer not found.' ? 404 : 401
@@ -110,6 +128,24 @@ adminRouter.delete('/customers/:customerId', (request, response) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Customer deletion failed.'
     const statusCode = message === 'Customer not found.' ? 404 : 401
+    response.status(statusCode).json({ message })
+  }
+})
+
+adminRouter.patch('/customers/:customerId/licenses/:licenseId', (request, response) => {
+  try {
+    requireAdminSession(request)
+    const licenseId = Number.parseInt(request.params.licenseId, 10)
+    const detail = updateAdminLicense(licenseId, request.body ?? {})
+
+    response.json({
+      message: `License ${licenseId} has been updated.`,
+      detail,
+      csrfToken: getCsrfToken(request),
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'License update failed.'
+    const statusCode = message.includes('not found') ? 404 : message === 'Admin authentication required.' ? 401 : 400
     response.status(statusCode).json({ message })
   }
 })

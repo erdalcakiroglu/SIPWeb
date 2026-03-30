@@ -431,3 +431,75 @@ export function updateAdminCustomer(customerId: number, input: AdminCustomerUpda
 
   return getAdminCustomerDetail(customer.id)
 }
+
+/**
+ * Update license details (expires_at, status, etc).
+ * Admin can extend license expiration or modify status.
+ */
+export function updateAdminLicense(
+  licenseId: number,
+  input: {
+    expiresAt?: unknown
+    status?: unknown
+  },
+) {
+  if (!Number.isInteger(licenseId) || licenseId <= 0) {
+    throw new Error('License not found.')
+  }
+
+  // Fetch license
+  const license = db.prepare('SELECT id, customer_id FROM Licenses WHERE id = ?').get(licenseId) as any
+
+  if (!license) {
+    throw new Error('License not found.')
+  }
+
+  const updates: string[] = []
+  const values: any[] = []
+
+  // Optional: new expires_at (ISO date string)
+  if (input.expiresAt !== undefined) {
+    const expiresAt = String(input.expiresAt).trim()
+    if (!expiresAt) {
+      throw new Error('Expires at cannot be empty.')
+    }
+
+    // Validate ISO format (basic check)
+    const date = new Date(expiresAt)
+    if (Number.isNaN(date.getTime())) {
+      throw new Error('Invalid date format. Use ISO format (YYYY-MM-DD or ISO 8601).')
+    }
+
+    updates.push('expires_at = ?')
+    values.push(expiresAt)
+  }
+
+  // Optional: new status
+  const allowedStatuses = ['active', 'trial_active', 'expired', 'revoked', 'suspended']
+  if (input.status !== undefined) {
+    const status = String(input.status).trim().toLowerCase()
+    if (!allowedStatuses.includes(status)) {
+      throw new Error(`Status must be one of: ${allowedStatuses.join(', ')}`)
+    }
+
+    updates.push('status = ?')
+    values.push(status)
+  }
+
+  if (updates.length === 0) {
+    throw new Error('No fields to update. Provide expiresAt and/or status.')
+  }
+
+  // Track update timestamp
+  const updatedAt = new Date().toISOString()
+  updates.push('updated_at = ?')
+  values.push(updatedAt)
+  values.push(license.id)
+
+  const sql = `UPDATE Licenses SET ${updates.join(', ')} WHERE id = ?`
+
+  db.prepare(sql).run(...values)
+
+  // Return updated license
+  return getAdminCustomerDetail(license.customer_id)
+}
