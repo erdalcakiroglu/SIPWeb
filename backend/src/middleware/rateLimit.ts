@@ -14,6 +14,7 @@ export const generalLimiter = rateLimit({
 
 /**
  * Auth uç noktaları: login, register, activate (brute-force azaltma).
+ * Başarılı istekler limiti sıfırlamıyor - sadece hata denemeleri sayılıyor.
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -21,6 +22,10 @@ export const authLimiter = rateLimit({
   message: { message: 'Too many attempts. Please try again in 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Başarılı istekleri (2xx responses) rate limit'ten hariç tut
+    return req.method === 'GET'
+  },
 })
 
 /**
@@ -35,12 +40,18 @@ export const licenseSensitiveLimiter = rateLimit({
 })
 
 /**
- * Admin login.
+ * Admin login - daha strict (5 deneme / 15 dakika).
+ * Başarılı girişleri rate limit'ten hariç tut.
  */
 export const adminLoginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: env.rateLimitAdminLogin,
-  message: { message: 'Too many login attempts. Please try again later.' },
+  message: { message: 'Too many admin login attempts. Please try again in 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  skip: (req) => {
+    // GET isteklerini skip et
+    return req.method === 'GET'
+  },
 })
