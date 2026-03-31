@@ -41,15 +41,18 @@ function makeRequest(path, method = 'GET', data = null, headers = {}) {
 async function testAdminLogin() {
   console.log('Admin Giriş Testı\n' + '='.repeat(40) + '\n');
 
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@sqlperformance.ai'
+  const adminPassword = process.env.ADMIN_PASSWORD || 'Jk8%sk93/ks.U'
+
   try {
     // Test 1: Doğru credentials ile giriş
     console.log('Test 1: Doğru credentials ile giriş');
-    console.log('Email: admin@sqlperformance.ai');
-    console.log('Password: Jk8%sk93/ks.U\n');
+    console.log('Email: ' + adminEmail);
+    console.log('Password: (from env)\n');
 
     let res = await makeRequest('/api/admin/login', 'POST', {
-      email: 'admin@sqlperformance.ai',
-      password: 'Jk8%sk93/ks.U',
+      email: adminEmail,
+      password: adminPassword,
     });
 
     if (res.status === 200) {
@@ -63,11 +66,11 @@ async function testAdminLogin() {
     // Test 2: Yanlış password ile giriş
     console.log('\n' + '-'.repeat(40) + '\n');
     console.log('Test 2: Yanlış password ile giriş');
-    console.log('Email: admin@sqlperformance.ai');
+    console.log('Email: ' + adminEmail);
     console.log('Password: wrongpassword\n');
 
     res = await makeRequest('/api/admin/login', 'POST', {
-      email: 'admin@sqlperformance.ai',
+      email: adminEmail,
       password: 'wrongpassword',
     });
 
@@ -82,11 +85,11 @@ async function testAdminLogin() {
     console.log('\n' + '-'.repeat(40) + '\n');
     console.log('Test 3: Yanlış email ile giriş');
     console.log('Email: wrong@example.com');
-    console.log('Password: Jk8%sk93/ks.U\n');
+    console.log('Password: (from env)\n');
 
     res = await makeRequest('/api/admin/login', 'POST', {
       email: 'wrong@example.com',
-      password: 'Jk8%sk93/ks.U',
+      password: adminPassword,
     });
 
     if (res.status === 400) {
@@ -101,8 +104,8 @@ async function testAdminLogin() {
     console.log('\nSonuç: Admin girişi sistem çalışıyor.');
     console.log('Admin paneline erişmek için:');
     console.log('  • http://localhost:3001/public/admin.html');
-    console.log('  • Email: admin@sqlperformance.ai');
-    console.log('  • Password: Jk8%sk93/ks.U');
+    console.log('  • Email: ' + adminEmail);
+    console.log('  • Password: (from environment)');
 
   } catch (error) {
     console.error('\n❌ Test hatası:', error.message);

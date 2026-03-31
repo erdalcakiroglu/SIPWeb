@@ -52,9 +52,11 @@ async function main() {
   try {
     // 1. Login
     console.log('1️⃣  Admin login...');
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@sqlperformance.ai'
+    const adminPassword = process.env.ADMIN_PASSWORD_HASH ? '' : (process.env.ADMIN_PASSWORD || 'test')
     let res = await makeRequest('/api/admin/login', 'POST', {
-      email: 'admin@sqlperformance.ai',
-      password: 'Jk8%sk93/ks.U',
+      email: adminEmail,
+      password: adminPassword,
     });
     if (res.status !== 200) throw new Error(`Login failed: ${res.status}`);
     

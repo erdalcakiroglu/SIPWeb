@@ -53,9 +53,11 @@ async function testFullAdminFlow() {
   try {
     // 1. Login
     console.log('1️⃣  Admin Girişi');
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@sqlperformance.ai'
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Jk8%sk93/ks.U'
     let res = await makeRequest('/api/admin/login', 'POST', {
-      email: 'admin@sqlperformance.ai',
-      password: 'Jk8%sk93/ks.U',
+      email: adminEmail,
+      password: adminPassword,
     });
     if (res.status !== 200) throw new Error(`Giriş başarısız: ${res.status}`);
     
