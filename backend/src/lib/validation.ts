@@ -2,15 +2,41 @@ export function normalizeEmail(value: string) {
   return value.trim().toLowerCase()
 }
 
+/**
+ * Disposable email domain blocklist.
+ * This is a partial list. For comprehensive protection in production,
+ * consider using an external service like Kickbox or ZeroBounce.
+ * Ref: https://github.com/ivolo/disposable-email-domains
+ */
 const disposableDomains = new Set([
   '10minutemail.com',
+  '10minutemail.de',
+  '1secmail.com',
+  '1secmail.net',
+  '1secmail.org',
+  'abusemail.de',
+  'burnermail.io',
+  'correspondence.top',
+  'cursedmail.com',
   'disposablemail.com',
+  'fakeinbox.com',
+  'getnada.com',
   'guerrillamail.com',
+  'guerrillamail.de',
+  'guerrillamail.org',
   'mailinator.com',
+  'mailnesia.com',
+  'nada.email',
   'sharklasers.com',
   'temp-mail.org',
+  'tempmail.cc',
   'tempmail.com',
+  'tempmail.email',
+  'tempmail.one',
+  'temporarymail.com',
   'throwawaymail.com',
+  'throwaway.email',
+  'trashmail.com',
   'yopmail.com',
 ])
 

@@ -3,3 +3,20 @@ dist
 .env
 .env.local
 data\mail-outbox.log
+
+# Veri dosyaları (içerik git'e gitmesin)
+# SQLite veritabanı
+backend/data/*.db
+
+
+backend/data/sessions/
+
+# Ama klasör yapısı kalsın
+!backend/data/.gitkeep
+!backend/data/sessions/.gitkeep
+
+
+# Ve iki dosya oluştur:
+
+backend/data/.gitkeep
+backend/data/sessions/.gitkeep

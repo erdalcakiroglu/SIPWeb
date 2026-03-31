@@ -5,5 +5,6 @@ declare module 'express-session' {
     userId?: number
     adminAuthenticated?: boolean
     adminEmail?: string
+    _csrfToken?: string
   }
 }

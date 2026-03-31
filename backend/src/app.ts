@@ -44,12 +44,19 @@ export function createApp() {
     response.sendFile(filePath)
   }
 
-  if (env.corsOrigin) {
-    const origins = env.corsOrigin.split(',').map((o) => o.trim()).filter(Boolean)
-    app.use(cors({ origin: origins.length > 0 ? origins : true, credentials: true }))
-  } else {
-    app.use(cors({ origin: true, credentials: true }))
+  if (env.corsOrigins.length === 0) {
+    console.warn(
+      '⚠️  WARNING: No CORS origins configured. Defaulting to localhost. In production, set CORS_ORIGIN env variable.',
+    )
   }
+  app.use(
+    cors({
+      origin: env.corsOrigins,
+      credentials: true,
+      methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+      maxAge: 3600,
+    }),
+  )
 
   app.use(express.json())
 
