@@ -781,8 +781,13 @@ if (adminLogoutButton) {
     hideMessage()
 
     try {
+      // Get current CSRF token before logout
+      const meResponse = await requestJson('/api/admin/me')
+      const csrfToken = meResponse.csrfToken
+
       await requestJson('/api/admin/logout', {
         method: 'POST',
+        body: JSON.stringify({ _csrf: csrfToken }),
       })
 
       window.location.href = '/admin/login'
