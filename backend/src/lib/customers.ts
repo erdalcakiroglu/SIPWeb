@@ -10,6 +10,7 @@ import {
   validateNonDisposableEmail,
   validatePhone,
 } from './validation'
+import { logAuditEvent } from './audit'
 
 type CustomerRow = {
   id: number
@@ -323,7 +324,21 @@ export function resolveCustomerForLicenseEmail(emailInput: unknown) {
     timestamp,
   )
 
-  return toPublicCustomer(requireCustomerById(Number(result.lastInsertRowid)))
+  const customerId = Number(result.lastInsertRowid)
+  
+  // Log audit event for placeholder customer creation
+  logAuditEvent({
+    action: 'PLACEHOLDER_CUSTOMER_CREATED',
+    entity: 'customer',
+    entityId: customerId,
+    status: 'success',
+    details: {
+      email,
+      source: 'auto-generated-for-license',
+    },
+  })
+
+  return toPublicCustomer(requireCustomerById(customerId))
 }
 
 export function changeCustomerPassword(customerId: number, newPasswordInput: unknown, confirmPasswordInput: unknown) {

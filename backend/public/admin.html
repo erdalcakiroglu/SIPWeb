@@ -188,6 +188,48 @@
       </section>
     </div>
 
+    <!-- License Edit Modal -->
+    <div id="editLicenseModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-edit-license-modal="true"></div>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="editLicenseModalTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="editLicenseModalTitle" class="section-title">Edit License</h2>
+            <p class="muted" id="editLicenseModalSubtitle">-</p>
+          </div>
+        </div>
+
+        <form id="editLicenseForm" class="form detail-form">
+          <div class="form-group">
+            <label for="editLicenseStatus">Status</label>
+            <select id="editLicenseStatus" name="status" required>
+              <option value="active">Active</option>
+              <option value="trial_active">Trial Active</option>
+              <option value="expired">Expired</option>
+              <option value="revoked">Revoked</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="editLicenseExpiresAt">Expiration Date</label>
+            <input type="datetime-local" id="editLicenseExpiresAt" name="expiresAt" required />
+          </div>
+
+          <div class="modal-actions modal-actions-between">
+            <button
+              type="button"
+              class="secondary-button"
+              data-close-edit-license-modal="true"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="primary-button">Update License</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
     <footer class="app-footer" aria-label="Product info">
       <a class="app-footer-link" href="https://sqlperformance.ai" target="_blank" rel="noopener">sqlperformance.ai</a>
       <span class="app-footer-version">v<span id="appVersion">0.1.0</span></span>

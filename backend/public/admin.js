@@ -295,7 +295,7 @@ function buildLicenseCards(licenses) {
         : 0
 
       return `
-        <article class="license-card admin-license-card admin-compact-license">
+        <article class="license-card admin-license-card admin-compact-license" data-license-id="${escapeHtml(license.id)}">
           <div class="admin-compact-license-header">
             <div>
               <h3 class="license-title">${escapeHtml(license.licenseName)}</h3>
@@ -328,6 +328,23 @@ function buildLicenseCards(licenses) {
               <span>Device ID</span>
               <strong class="license-code">${escapeHtml(formatField(license.deviceId))}</strong>
             </div>
+            <div class="admin-compact-license-meta-item">
+              <span>Server URL</span>
+              <strong>${escapeHtml(formatField(license.serverUrl))}</strong>
+            </div>
+            <div class="admin-compact-license-meta-item">
+              <span>Updated</span>
+              <strong>${escapeHtml(formatDate(license.updatedAt))}</strong>
+            </div>
+          </div>
+          <div class="license-card-actions">
+            <button class="secondary-button" data-edit-license="${escapeHtml(license.id)}">Edit</button>
+          </div>
+        </article>
+      `
+    })
+    .join('')
+}
             <div class="admin-compact-license-meta-item">
               <span>Server URL</span>
               <strong>${escapeHtml(formatField(license.serverUrl))}</strong>
@@ -861,6 +878,134 @@ if (confirmDeleteCustomerButton) {
     })
   })
 }
+
+// ===== License Edit Modal =====
+
+const editLicenseModal = document.getElementById('editLicenseModal')
+const editLicenseForm = document.getElementById('editLicenseForm')
+const editLicenseModalTitle = document.getElementById('editLicenseModalTitle')
+const editLicenseModalSubtitle = document.getElementById('editLicenseModalSubtitle')
+const editLicenseStatus = document.getElementById('editLicenseStatus')
+const editLicenseExpiresAt = document.getElementById('editLicenseExpiresAt')
+
+let currentEditingLicense = null
+
+function openEditLicenseModal(license) {
+  if (!editLicenseModal || !editLicenseForm) return
+
+  currentEditingLicense = license
+
+  editLicenseModalTitle.textContent = `Edit License: ${escapeHtml(license.licenseName)}`
+  editLicenseModalSubtitle.textContent = `ID: ${escapeHtml(license.publicId)}`
+  editLicenseStatus.value = license.status || 'active'
+
+  // Convert ISO datetime to datetime-local format (YYYY-MM-DDTHH:mm)
+  const expiryDate = new Date(license.expiresAt)
+  const iso = expiryDate.toISOString().slice(0, 16)
+  editLicenseExpiresAt.value = iso
+
+  if (editLicenseModal.classList.contains('hidden')) {
+    editLicenseModal.classList.remove('hidden')
+    editLicenseModal.setAttribute('aria-hidden', 'false')
+  }
+}
+
+function closeEditLicenseModal() {
+  if (!editLicenseModal) return
+
+  if (!editLicenseModal.classList.contains('hidden')) {
+    editLicenseModal.classList.add('hidden')
+    editLicenseModal.setAttribute('aria-hidden', 'true')
+  }
+
+  currentEditingLicense = null
+}
+
+async function submitLicenseEdit() {
+  if (!currentEditingLicense) {
+    showMessage('No license selected for editing.', 'error')
+    return
+  }
+
+  if (!selectedCustomerDetail) {
+    showMessage('No customer selected.', 'error')
+    return
+  }
+
+  try {
+    // Get CSRF token
+    const meResponse = await requestJson('/api/admin/me')
+    const csrfToken = meResponse.csrfToken
+
+    const expiryDate = new Date(editLicenseExpiresAt.value)
+    const payload = await requestJson(
+      `/api/admin/customers/${selectedCustomerDetail.customer.id}/licenses/${currentEditingLicense.id}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({
+          _csrf: csrfToken,
+          status: editLicenseStatus.value,
+          expiresAt: expiryDate.toISOString(),
+        }),
+      }
+    )
+
+    if (payload.message) {
+      showMessage(payload.message, 'success')
+      closeEditLicenseModal()
+      // Reload customer detail to show updated license
+      await loadCustomerDetail(selectedCustomerDetail.customer.id)
+    }
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'License could not be updated.'
+    showMessage(errorMsg, 'error')
+  }
+}
+
+if (editLicenseForm) {
+  editLicenseForm.addEventListener('submit', (event) => {
+    event.preventDefault()
+    submitLicenseEdit().catch(() => {
+      showMessage('License could not be updated.', 'error')
+    })
+  })
+}
+
+// Close modal on backdrop or close button click
+document.addEventListener('click', (event) => {
+  if (!(event.target instanceof Element)) {
+    return
+  }
+
+  const closeButton = event.target.closest('[data-close-edit-license-modal]')
+  if (closeButton) {
+    closeEditLicenseModal()
+  }
+})
+
+// Close modal on Escape key
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    closeEditLicenseModal()
+  }
+})
+
+// Edit license button click handler
+document.addEventListener('click', (event) => {
+  if (!(event.target instanceof Element)) {
+    return
+  }
+
+  const editButton = event.target.closest('[data-edit-license]')
+  if (editButton && selectedCustomerDetail) {
+    const licenseId = Number.parseInt(editButton.dataset.editLicense || '', 10)
+    const license = selectedCustomerDetail.licenses.find((l) => l.id === licenseId)
+
+    if (license) {
+      openEditLicenseModal(license)
+    }
+  }
+})
 
 if (adminIdentity) {
   resetCustomerDetail()
