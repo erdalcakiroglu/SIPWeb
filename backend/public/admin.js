@@ -618,8 +618,13 @@ async function confirmDeleteCustomer() {
   }
 
   try {
+    // Get CSRF token before deletion
+    const meResponse = await requestJson('/api/admin/me')
+    const csrfToken = meResponse.csrfToken
+
     const payload = await requestJson(`/api/admin/customers/${customerId}`, {
       method: 'DELETE',
+      body: JSON.stringify({ _csrf: csrfToken }),
     })
 
     closeDeleteCustomerModal(true)
