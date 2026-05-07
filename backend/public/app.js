@@ -301,6 +301,13 @@ function buildOfflineExportMarkup(license) {
         </div>
         <div class="license-download-actions">
           <button class="secondary-button secondary-button-compact" type="submit">Download .lic</button>
+          <button
+            class="secondary-button secondary-button-compact"
+            type="button"
+            data-download-public-key="${escapeHtml(license.publicId)}"
+          >
+            Download .pem
+          </button>
           <span class="license-download-hint">Use the Device ID shown in the desktop app.</span>
         </div>
       </form>
@@ -686,6 +693,35 @@ async function downloadOfflineLicense(publicLicenseId, form) {
   )
 }
 
+async function downloadPublicKeyPem(publicLicenseId) {
+  const license = findLicenseById(publicLicenseId)
+
+  if (!license) {
+    throw new Error('License record could not be found.')
+  }
+
+  const response = await fetch('/api/license/public-key/download', {
+    method: 'GET',
+    credentials: 'same-origin',
+  })
+
+  if (!response.ok) {
+    throw new Error(await readErrorMessage(response))
+  }
+
+  const fileName = getDownloadFileName(
+    response.headers.get('Content-Disposition'),
+    'spstudio-license-public-key.pem',
+  )
+  const blob = await response.blob()
+  triggerFileDownload(blob, fileName)
+
+  showMessage(
+    `${license.licenseName} public key .pem downloaded. Use it in the desktop app for license verification.`,
+    'success',
+  )
+}
+
 async function confirmDeleteLicense() {
   if (!pendingDeleteLicenseId || !confirmDeleteLicenseButton) {
     return
@@ -820,6 +856,25 @@ document.addEventListener('click', (event) => {
 
   if (deleteButton instanceof HTMLElement) {
     openDeleteLicenseModal(deleteButton.dataset.deleteLicense)
+    return
+  }
+
+  const publicKeyButton = target.closest('[data-download-public-key]')
+
+  if (publicKeyButton instanceof HTMLButtonElement) {
+    const originalLabel = publicKeyButton.textContent || 'Download .pem'
+    publicKeyButton.disabled = true
+    publicKeyButton.textContent = 'Downloading...'
+
+    downloadPublicKeyPem(publicKeyButton.dataset.downloadPublicKey)
+      .catch((error) => {
+        showMessage(error.message, 'error')
+      })
+      .finally(() => {
+        publicKeyButton.disabled = false
+        publicKeyButton.textContent = originalLabel
+      })
+
     return
   }
 

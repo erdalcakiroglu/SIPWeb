@@ -540,6 +540,20 @@ function getOrCreatePortalLicense(customerId: number, customerEmail: string, lic
     return existing
   }
 
+  // Check max_licenses limit before creating new license
+  const currentLicenseCount = db
+    .prepare('SELECT COUNT(*) as count FROM Licenses WHERE customer_id = ? AND status IN (?, ?)')
+    .get(customerId, 'active', 'trial_active') as { count: number }
+  
+  const maxLicensesRow = db
+    .prepare('SELECT max_licenses FROM Customers WHERE id = ?')
+    .get(customerId) as { max_licenses: number } | undefined
+  const maxLicenses = maxLicensesRow?.max_licenses || 1
+  
+  if (currentLicenseCount.count >= maxLicenses) {
+    throw new Error(`You have reached the maximum number of licenses (${maxLicenses}). Please contact support to request more.`)
+  }
+
   const timestamp = nowIso()
   const result = db.prepare(`
     INSERT INTO Licenses (
@@ -570,7 +584,7 @@ function getOrCreatePortalLicense(customerId: number, customerEmail: string, lic
     customerId,
     licenseName,
     timestamp,
-    isoInDays(180),
+    isoInDays(90),
     canonicalizeJson(defaultFeatureSet),
     autoProvisionedPortalLicenseNote,
     customerPortalLicenseSource,
@@ -589,6 +603,20 @@ function getOrCreatePortalLicense(customerId: number, customerEmail: string, lic
 }
 
 function createPortalLicense(customerId: number, customerEmail: string, licenseName: string, serverUrl: string | null) {
+  // Check max_licenses limit before creating new license
+  const currentLicenseCount = db
+    .prepare('SELECT COUNT(*) as count FROM Licenses WHERE customer_id = ? AND status IN (?, ?)')
+    .get(customerId, 'active', 'trial_active') as { count: number }
+  
+  const maxLicensesRow = db
+    .prepare('SELECT max_licenses FROM Customers WHERE id = ?')
+    .get(customerId) as { max_licenses: number } | undefined
+  const maxLicenses = maxLicensesRow?.max_licenses || 1
+  
+  if (currentLicenseCount.count >= maxLicenses) {
+    throw new Error(`You have reached the maximum number of licenses (${maxLicenses}). Please contact support to request more.`)
+  }
+
   const timestamp = nowIso()
   const result = db.prepare(`
     INSERT INTO Licenses (
@@ -619,7 +647,7 @@ function createPortalLicense(customerId: number, customerEmail: string, licenseN
     customerId,
     licenseName,
     timestamp,
-    isoInDays(180),
+    isoInDays(90),
     canonicalizeJson(defaultFeatureSet),
     portalCreatedLicenseNote,
     customerPortalLicenseSource,

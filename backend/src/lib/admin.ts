@@ -1,4 +1,3 @@
-import { env } from '../config/env'
 import { db } from './db'
 import { getPublicCustomerById, type PublicCustomer } from './customers'
 import { listLicensesByCustomerId, type PublicLicense } from './licenses'
@@ -52,6 +51,34 @@ type AdminLicenseEventRow = {
   created_at: string
   license_name: string | null
   license_public_id: number | null
+}
+
+type AdminContactMessageRow = {
+  id: number
+  reason: string
+  full_name: string
+  work_email: string
+  company: string | null
+  subject: string
+  message: string
+  environment: string | null
+  source_page: string | null
+  origin: string | null
+  referer: string | null
+  user_agent: string | null
+  ip_address: string | null
+  status: string
+  created_at: string
+  updated_at: string
+}
+
+type AdminRow = {
+  id: number
+  email: string
+  password_hash: string
+  name: string
+  role: string
+  is_active: number
 }
 
 export type AdminIdentity = {
@@ -108,6 +135,25 @@ export type AdminLicenseEventRecord = {
   licensePublicId: string | null
 }
 
+export type AdminContactMessageRecord = {
+  id: number
+  reason: string
+  fullName: string
+  workEmail: string
+  company: string | null
+  subject: string
+  message: string
+  environment: string | null
+  sourcePage: string | null
+  origin: string | null
+  referer: string | null
+  userAgent: string | null
+  ipAddress: string | null
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
 export type AdminCustomerDetail = {
   customer: PublicCustomer
   licenses: PublicLicense[]
@@ -127,11 +173,19 @@ export type AdminCustomerUpdateInput = {
   email: unknown
   phone: unknown
   companyName: unknown
+  maxLicenses: unknown
 }
 
 type CustomerExistsRow = {
   id: number
   email: string
+  max_licenses: number
+}
+
+type ContactMessageExistsRow = {
+  id: number
+  subject: string
+  work_email: string
 }
 
 function toPublicLicenseId(id: number) {
@@ -169,6 +223,27 @@ function toAdminCustomerSummary(row: AdminCustomerRow): AdminCustomerSummary {
   }
 }
 
+function toAdminContactMessageRecord(row: AdminContactMessageRow): AdminContactMessageRecord {
+  return {
+    id: row.id,
+    reason: row.reason,
+    fullName: row.full_name,
+    workEmail: row.work_email,
+    company: row.company,
+    subject: row.subject,
+    message: row.message,
+    environment: row.environment,
+    sourcePage: row.source_page,
+    origin: row.origin,
+    referer: row.referer,
+    userAgent: row.user_agent,
+    ipAddress: row.ip_address,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
 function requireCustomerId(customerId: number) {
   if (!Number.isInteger(customerId) || customerId <= 0) {
     throw new Error('Customer not found.')
@@ -180,7 +255,7 @@ function requireCustomerId(customerId: number) {
 function requireCustomerRecord(customerId: number) {
   const safeCustomerId = requireCustomerId(customerId)
   const customer = db
-    .prepare('SELECT id, email FROM Customers WHERE id = ?')
+    .prepare('SELECT id, email, max_licenses FROM Customers WHERE id = ?')
     .get(safeCustomerId) as CustomerExistsRow | undefined
 
   if (!customer) {
@@ -193,25 +268,30 @@ function requireCustomerRecord(customerId: number) {
 export function authenticateAdmin(emailInput: unknown, passwordInput: unknown): AdminIdentity {
   const email = normalizeEmail(requireText(emailInput, 'Admin email'))
   const password = requireText(passwordInput, 'Admin password')
-  const expectedEmail = normalizeEmail(env.adminEmail)
 
   if (!validateEmail(email)) {
     throw new Error('Please enter a valid admin email address.')
   }
 
-  if (email !== expectedEmail) {
+  const admin = db.prepare(
+    'SELECT id, email, password_hash, name, role, is_active FROM Admins WHERE email = ?',
+  ).get(email) as AdminRow | undefined
+
+  if (!admin) {
     throw new Error('Invalid admin credentials.')
   }
 
-  if (env.adminPasswordHash) {
-    if (!verifyPassword(password, env.adminPasswordHash)) {
-      throw new Error('Invalid admin credentials.')
-    }
-  } else if (password !== env.adminPassword) {
+  if (!admin.is_active) {
+    throw new Error('Admin account is deactivated.')
+  }
+
+  if (!verifyPassword(password, admin.password_hash)) {
     throw new Error('Invalid admin credentials.')
   }
 
-  return { email: expectedEmail }
+  db.prepare('UPDATE Admins SET last_login_at = ? WHERE id = ?').run(new Date().toISOString(), admin.id)
+
+  return { email: admin.email }
 }
 
 export function getAdminDashboardData(): AdminDashboardData {
@@ -260,6 +340,57 @@ export function getAdminDashboardData(): AdminDashboardData {
       activeDevices: Number(summaryRow.active_devices) || 0,
     },
     customers: customerRows.map(toAdminCustomerSummary),
+  }
+}
+
+export function getAdminContactMessages(): AdminContactMessageRecord[] {
+  const contactMessageRows = db
+    .prepare(`
+      SELECT
+        id,
+        reason,
+        full_name,
+        work_email,
+        company,
+        subject,
+        message,
+        environment,
+        source_page,
+        origin,
+        referer,
+        user_agent,
+        ip_address,
+        status,
+        created_at,
+        updated_at
+      FROM ContactMessages
+      ORDER BY created_at DESC
+      LIMIT 200
+    `)
+    .all() as AdminContactMessageRow[]
+
+  return contactMessageRows.map(toAdminContactMessageRecord)
+}
+
+export function deleteAdminContactMessage(messageId: number) {
+  if (!Number.isInteger(messageId) || messageId <= 0) {
+    throw new Error('Contact message not found.')
+  }
+
+  const message = db
+    .prepare('SELECT id, subject, work_email FROM ContactMessages WHERE id = ?')
+    .get(messageId) as ContactMessageExistsRow | undefined
+
+  if (!message) {
+    throw new Error('Contact message not found.')
+  }
+
+  db.prepare('DELETE FROM ContactMessages WHERE id = ?').run(message.id)
+
+  return {
+    deletedMessageId: message.id,
+    deletedSubject: message.subject,
+    deletedWorkEmail: message.work_email,
   }
 }
 
@@ -372,6 +503,16 @@ export function updateAdminCustomer(customerId: number, input: AdminCustomerUpda
   const companyName = requireText(input.companyName, 'Company name')
   const email = normalizeEmail(requireText(input.email, 'Email address'))
   const phone = normalizePhone(requireText(input.phone, 'Phone'))
+  
+  const maxLicenses = input.maxLicenses !== undefined && input.maxLicenses !== null
+    ? (() => {
+        const val = Number(input.maxLicenses)
+        if (!Number.isInteger(val) || val < 1) {
+          throw new Error('Max licenses must be a positive integer.')
+        }
+        return val
+      })()
+    : customer.max_licenses
 
   if (!validateEmail(email)) {
     throw new Error('Please enter a valid email address.')
@@ -403,9 +544,10 @@ export function updateAdminCustomer(customerId: number, input: AdminCustomerUpda
         email = ?,
         phone = ?,
         company_name = ?,
+        max_licenses = ?,
         updated_at = ?
       WHERE id = ?
-    `).run(name, surname, job, email, phone, companyName, updatedAt, customer.id)
+    `).run(name, surname, job, email, phone, companyName, maxLicenses, updatedAt, customer.id)
 
     if (email !== customer.email) {
       db.prepare(`

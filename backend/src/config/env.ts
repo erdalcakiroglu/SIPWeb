@@ -28,9 +28,12 @@ export const env = {
   /** Veritabanı ve session dosyaları için dizin. */
   dataDir: process.env.DATA_DIR || defaultDataDir,
   adminEmail: process.env.ADMIN_EMAIL || 'admin@sqlperformance.ai',
-  /** Düz metin (geriye uyumluluk). ADMIN_PASSWORD_HASH varsa o kullanılır. */
+  /** Seed şifresi: Sadece ilk çalıştırmada Admins tablosu boşsa kullanılır. */
+  adminSeedEmail: (process.env.ADMIN_SEED_EMAIL || process.env.ADMIN_EMAIL || 'admin@sqlperformance.ai').trim().toLowerCase(),
+  adminSeedPassword: process.env.ADMIN_SEED_PASSWORD || process.env.ADMIN_PASSWORD || 'Admin12345!',
+  /** @deprecated Geriye uyumluluk — artık DB'den okunuyor. */
   adminPassword: process.env.ADMIN_PASSWORD || 'Admin12345!',
-  /** Scrypt formatı: salt:hash (password.ts ile üretilir). Varsa admin girişi buna göre doğrulanır. */
+  /** @deprecated Geriye uyumluluk — artık DB'den okunuyor. */
   adminPasswordHash: process.env.ADMIN_PASSWORD_HASH || '',
   smtpHost: process.env.SMTP_HOST || '',
   smtpPort: parseNumber(process.env.SMTP_PORT, 587),

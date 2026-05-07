@@ -8,6 +8,8 @@ import { env } from './config/env'
 import { getVersionInfo } from './lib/version'
 import { authRouter } from './routes/auth'
 import { adminRouter } from './routes/admin'
+import { contactRouter } from './routes/contact'
+import { downloadRouter } from './routes/download'
 import { licenseRouter } from './routes/license'
 import { errorHandler } from './middleware/errorHandler'
 import {
@@ -30,6 +32,8 @@ export function createApp() {
   const accountActivationCodePath = path.join(publicDir, 'account-activation-code.html')
   const adminLoginPath = path.join(publicDir, 'admin-login.html')
   const adminPath = path.join(publicDir, 'admin.html')
+  const adminContactMessagesPath = path.join(publicDir, 'admin-contact-messages.html')
+  const adminDownloadReleasePath = path.join(publicDir, 'admin-download-release.html')
 
   function sendProtectedAccountPage(
     request: express.Request,
@@ -38,6 +42,19 @@ export function createApp() {
   ) {
     if (!request.session.userId) {
       response.redirect('/')
+      return
+    }
+
+    response.sendFile(filePath)
+  }
+
+  function sendProtectedAdminPage(
+    request: express.Request,
+    response: express.Response,
+    filePath: string,
+  ) {
+    if (!request.session.adminAuthenticated) {
+      response.redirect('/admin/login')
       return
     }
 
@@ -117,16 +134,19 @@ export function createApp() {
     response.sendFile(adminLoginPath)
   })
   app.get('/admin', (request, response) => {
-    if (!request.session.adminAuthenticated) {
-      response.redirect('/admin/login')
-      return
-    }
-
-    response.sendFile(adminPath)
+    sendProtectedAdminPage(request, response, adminPath)
+  })
+  app.get('/admin/contact-messages', (request, response) => {
+    sendProtectedAdminPage(request, response, adminContactMessagesPath)
+  })
+  app.get('/admin/download-release', (request, response) => {
+    sendProtectedAdminPage(request, response, adminDownloadReleasePath)
   })
 
   app.use('/api/auth', authLimiter, authRouter)
   app.use('/api/admin', adminRouter)
+  app.use('/api', contactRouter)
+  app.use('/api', downloadRouter)
   app.use('/api', licenseRouter)
 
   app.use((request, response) => {

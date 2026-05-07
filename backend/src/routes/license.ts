@@ -53,6 +53,14 @@ licenseRouter.get('/license/public-key', (_request, response) => {
   response.json(getLicenseVerificationInfo())
 })
 
+licenseRouter.get('/license/public-key/download', (_request, response) => {
+  const verification = getLicenseVerificationInfo()
+
+  response.setHeader('Content-Type', 'application/x-pem-file')
+  response.setHeader('Content-Disposition', 'attachment; filename="spstudio-license-public-key.pem"')
+  response.send(verification.publicKeyPem)
+})
+
 licenseRouter.get('/license/activation-code', (_request, response) => {
   response.status(405).json({
     message: 'Use POST /api/license/activation-code or generate the code from the account page.',

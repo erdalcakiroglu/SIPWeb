@@ -115,3 +115,138 @@ export const adminLoginSchema = z.object({
   email: z.string().min(1, 'Admin email is required.').transform((s) => s.trim().toLowerCase()),
   password: z.string().min(1, 'Admin password is required.'),
 })
+
+export const adminDownloadReleaseSchema = z.object({
+  version: z.string().min(1, 'Version is required.').transform((s) => s.trim()),
+  released: z
+    .string()
+    .min(1, 'Release date is required.')
+    .transform((s) => s.trim())
+    .refine((value) => /^\d{4}-\d{2}-\d{2}$/.test(value), {
+      message: 'Release date must use YYYY-MM-DD format.',
+    })
+    .refine((value) => !Number.isNaN(new Date(`${value}T00:00:00Z`).getTime()), {
+      message: 'Release date is invalid.',
+    }),
+  sha256: z
+    .string()
+    .optional()
+    .transform((value) => (value ?? '').trim().toLowerCase())
+    .refine((value) => value === '' || /^[a-f0-9]{64}$/.test(value), {
+      message: 'SHA-256 must be empty or a 64-character hexadecimal hash.',
+    }),
+})
+
+const contactFormRawSchema = z.object({
+  reason: z.enum(['sales', 'technical']).default('sales'),
+  full_name: z.string().optional(),
+  fullName: z.string().optional(),
+  work_email: z.string().optional(),
+  workEmail: z.string().optional(),
+  company: z.string().optional(),
+  subject: z.string().optional(),
+  message: z.string().optional(),
+  environment: z.string().optional(),
+  website: z.string().optional(),
+  source_page: z.string().optional(),
+  sourcePage: z.string().optional(),
+})
+
+function trimOptional(value: string | undefined) {
+  const trimmed = value?.trim()
+  return trimmed ? trimmed : undefined
+}
+
+export const contactFormSchema = contactFormRawSchema
+  .transform((data) => ({
+    reason: data.reason,
+    fullName: (data.full_name ?? data.fullName ?? '').trim(),
+    workEmail: (data.work_email ?? data.workEmail ?? '').trim().toLowerCase(),
+    company: trimOptional(data.company),
+    subject: (data.subject ?? '').trim(),
+    message: (data.message ?? '').trim(),
+    environment: trimOptional(data.environment),
+    website: trimOptional(data.website),
+    sourcePage: trimOptional(data.source_page ?? data.sourcePage),
+  }))
+  .superRefine((data, ctx) => {
+    if (!data.fullName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['fullName'],
+        message: 'Full name is required.',
+      })
+    } else if (data.fullName.length > 120) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['fullName'],
+        message: 'Full name must be 120 characters or fewer.',
+      })
+    }
+
+    if (!data.workEmail) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['workEmail'],
+        message: 'Work email is required.',
+      })
+    } else if (!email.safeParse(data.workEmail).success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['workEmail'],
+        message: 'Please enter a valid work email address.',
+      })
+    }
+
+    if (data.company && data.company.length > 160) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['company'],
+        message: 'Company must be 160 characters or fewer.',
+      })
+    }
+
+    if (!data.subject) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['subject'],
+        message: 'Subject is required.',
+      })
+    } else if (data.subject.length > 160) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['subject'],
+        message: 'Subject must be 160 characters or fewer.',
+      })
+    }
+
+    if (!data.message) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['message'],
+        message: 'Message is required.',
+      })
+    } else if (data.message.length > 5000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['message'],
+        message: 'Message must be 5000 characters or fewer.',
+      })
+    }
+
+    if (data.environment && data.environment.length > 200) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['environment'],
+        message: 'Environment must be 200 characters or fewer.',
+      })
+    }
+
+    if (data.sourcePage && data.sourcePage.length > 500) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['sourcePage'],
+        message: 'Source page must be 500 characters or fewer.',
+      })
+    }
+  })

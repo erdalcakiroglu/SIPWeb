@@ -27,12 +27,30 @@ const metricLicenses = document.getElementById('metricLicenses')
 const metricActiveLicenses = document.getElementById('metricActiveLicenses')
 const metricActivationCodes = document.getElementById('metricActivationCodes')
 const metricDevices = document.getElementById('metricDevices')
+const contactMessageTableBody = document.getElementById('contactMessageTableBody')
+const contactMessageModal = document.getElementById('contactMessageModal')
+const contactMessageModalTitle = document.getElementById('contactMessageModalTitle')
+const contactMessageModalSubtitle = document.getElementById('contactMessageModalSubtitle')
+const contactMessageMeta = document.getElementById('contactMessageMeta')
+const contactMessageBody = document.getElementById('contactMessageBody')
+const deleteContactMessageButton = document.getElementById('deleteContactMessageButton')
+const downloadReleaseForm = document.getElementById('downloadReleaseForm')
+const downloadReleaseVersionInput = document.getElementById('downloadReleaseVersion')
+const downloadReleaseReleasedInput = document.getElementById('downloadReleaseReleased')
+const downloadReleaseSha256Input = document.getElementById('downloadReleaseSha256')
+const downloadReleaseUpdatedAt = document.getElementById('downloadReleaseUpdatedAt')
+const downloadReleaseUpdatedBy = document.getElementById('downloadReleaseUpdatedBy')
+const saveDownloadReleaseButton = document.getElementById('saveDownloadReleaseButton')
+const adminPage = document.body?.dataset.adminPage || ''
 
 let dashboardCustomers = []
+let dashboardContactMessages = []
 let selectedCustomerId = null
 let selectedCustomerDetail = null
 let customerDetailMode = 'view'
 let pendingDeleteCustomer = null
+let currentDownloadRelease = null
+let currentContactMessage = null
 
 function showMessage(text, tone = 'success') {
   if (!adminMessageBox) {
@@ -218,6 +236,249 @@ function renderSummary(summary) {
   metricDevices.textContent = summary.activeDevices
 }
 
+function formatReasonLabel(reason) {
+  if (reason === 'sales') {
+    return 'Sales'
+  }
+
+  if (reason === 'technical') {
+    return 'Technical'
+  }
+
+  return formatField(reason)
+}
+
+function truncateText(value, maxLength = 88) {
+  const text = String(value || '')
+
+  if (text.length <= maxLength) {
+    return text
+  }
+
+  return `${text.slice(0, maxLength - 1)}…`
+}
+
+function renderContactMessageTable() {
+  if (!contactMessageTableBody) {
+    return
+  }
+
+  if (!Array.isArray(dashboardContactMessages) || dashboardContactMessages.length === 0) {
+    contactMessageTableBody.innerHTML =
+      '<tr><td colspan="6" class="table-empty">No contact messages found.</td></tr>'
+    return
+  }
+
+  contactMessageTableBody.innerHTML = dashboardContactMessages
+    .map((message) => {
+      const contactLine = message.company
+        ? `${message.fullName} • ${message.company}`
+        : message.fullName
+      const statusIsPositive = ['read', 'resolved', 'closed'].includes(String(message.status).toLowerCase())
+
+      return `
+        <tr>
+          <td>${escapeHtml(formatDate(message.createdAt))}</td>
+          <td>${buildStatusBadge(formatReasonLabel(message.reason), message.reason === 'technical')}</td>
+          <td>
+            <strong>${escapeHtml(contactLine)}</strong>
+            <div class="table-subtitle">${escapeHtml(message.workEmail)}</div>
+          </td>
+          <td>
+            <strong>${escapeHtml(message.subject)}</strong>
+            <div class="table-subtitle">${escapeHtml(truncateText(message.message))}</div>
+          </td>
+          <td>${buildStatusBadge(formatField(message.status), statusIsPositive)}</td>
+          <td>
+            <div class="admin-row-actions">
+              <button
+                class="secondary-button secondary-button-compact"
+                type="button"
+                data-view-contact-message-id="${message.id}"
+              >
+                View
+              </button>
+              <button
+                class="danger-button danger-button-compact"
+                type="button"
+                data-delete-contact-message-id="${message.id}"
+              >
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+      `
+    })
+    .join('')
+}
+
+function openContactMessageModal(message) {
+  if (!contactMessageModal || !contactMessageMeta || !contactMessageBody) {
+    showMessage('Contact message detail is not available.', 'error')
+    return
+  }
+
+  currentContactMessage = message
+
+  if (contactMessageModalTitle) {
+    contactMessageModalTitle.textContent = message.subject || 'Contact Message'
+  }
+
+  if (contactMessageModalSubtitle) {
+    contactMessageModalSubtitle.textContent = `${message.fullName} • ${message.workEmail}`
+  }
+
+  contactMessageMeta.innerHTML = `
+    <div class="detail-field"><span>Reason</span><strong>${escapeHtml(formatReasonLabel(message.reason))}</strong></div>
+    <div class="detail-field"><span>Status</span><strong>${escapeHtml(formatField(message.status))}</strong></div>
+    <div class="detail-field"><span>Received</span><strong>${escapeHtml(formatDate(message.createdAt))}</strong></div>
+    <div class="detail-field"><span>Company</span><strong>${escapeHtml(formatField(message.company))}</strong></div>
+    <div class="detail-field"><span>Environment</span><strong>${escapeHtml(formatField(message.environment))}</strong></div>
+    <div class="detail-field"><span>IP Address</span><strong>${escapeHtml(formatField(message.ipAddress))}</strong></div>
+    <div class="detail-field"><span>Source Page</span><strong>${escapeHtml(formatField(message.sourcePage))}</strong></div>
+    <div class="detail-field"><span>Origin</span><strong>${escapeHtml(formatField(message.origin))}</strong></div>
+    <div class="detail-field"><span>Referer</span><strong>${escapeHtml(formatField(message.referer))}</strong></div>
+    <div class="detail-field"><span>User Agent</span><strong>${escapeHtml(formatField(message.userAgent))}</strong></div>
+  `
+
+  contactMessageBody.textContent = message.message || '-'
+
+  if (deleteContactMessageButton) {
+    deleteContactMessageButton.disabled = false
+  }
+
+  contactMessageModal.classList.remove('hidden')
+  contactMessageModal.setAttribute('aria-hidden', 'false')
+}
+
+function closeContactMessageModal() {
+  if (!contactMessageModal) {
+    return
+  }
+
+  if (deleteContactMessageButton) {
+    deleteContactMessageButton.disabled = false
+  }
+
+  contactMessageModal.classList.add('hidden')
+  contactMessageModal.setAttribute('aria-hidden', 'true')
+  currentContactMessage = null
+}
+
+async function deleteContactMessage(messageId) {
+  const message = dashboardContactMessages.find((item) => item.id === messageId)
+
+  if (!message) {
+    showMessage('Contact message could not be found.', 'error')
+    return
+  }
+
+  const confirmed = window.confirm(
+    `Delete contact message "${message.subject}" from ${message.workEmail}?`,
+  )
+
+  if (!confirmed) {
+    return
+  }
+
+  hideMessage()
+
+  if (deleteContactMessageButton && currentContactMessage?.id === messageId) {
+    deleteContactMessageButton.disabled = true
+  }
+
+  try {
+    const meResponse = await requestJson('/api/admin/me')
+    const csrfToken = meResponse.csrfToken
+
+    const payload = await requestJson(`/api/admin/contact-messages/${messageId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ _csrf: csrfToken }),
+    })
+
+    dashboardContactMessages = dashboardContactMessages.filter((item) => item.id !== messageId)
+    renderContactMessageTable()
+
+    if (currentContactMessage?.id === messageId) {
+      closeContactMessageModal()
+    }
+
+    showMessage(payload.message, 'success')
+  } catch (error) {
+    showMessage(error.message, 'error')
+  } finally {
+    if (deleteContactMessageButton) {
+      deleteContactMessageButton.disabled = false
+    }
+  }
+}
+
+function renderDownloadReleaseSettings(downloadRelease) {
+  currentDownloadRelease = downloadRelease
+
+  if (downloadReleaseVersionInput) {
+    downloadReleaseVersionInput.value = downloadRelease.version || ''
+  }
+
+  if (downloadReleaseReleasedInput) {
+    downloadReleaseReleasedInput.value = downloadRelease.released || ''
+  }
+
+  if (downloadReleaseSha256Input) {
+    downloadReleaseSha256Input.value = downloadRelease.sha256 || ''
+  }
+
+  if (downloadReleaseUpdatedAt) {
+    downloadReleaseUpdatedAt.textContent = formatDate(downloadRelease.updatedAt)
+  }
+
+  if (downloadReleaseUpdatedBy) {
+    downloadReleaseUpdatedBy.textContent = formatField(downloadRelease.updatedBy)
+  }
+}
+
+async function loadDownloadReleaseSettings() {
+  if (!downloadReleaseForm) {
+    return
+  }
+
+  const payload = await requestJson('/api/admin/download/release')
+  renderDownloadReleaseSettings(payload.downloadRelease)
+}
+
+async function saveDownloadReleaseSettings() {
+  if (!(downloadReleaseForm instanceof HTMLFormElement) || !saveDownloadReleaseButton) {
+    return
+  }
+
+  if (!downloadReleaseForm.reportValidity()) {
+    return
+  }
+
+  hideMessage()
+  saveDownloadReleaseButton.disabled = true
+
+  try {
+    const meResponse = await requestJson('/api/admin/me')
+    const csrfToken = meResponse.csrfToken
+    const payload = await requestJson('/api/admin/download/release', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        ...readForm(downloadReleaseForm),
+        _csrf: csrfToken,
+      }),
+    })
+
+    renderDownloadReleaseSettings(payload.downloadRelease)
+    showMessage(payload.message, 'success')
+  } catch (error) {
+    showMessage(error.message, 'error')
+  } finally {
+    saveDownloadReleaseButton.disabled = false
+  }
+}
+
 function matchesCustomerFilter(customer, filterValue) {
   if (!filterValue) {
     return true
@@ -345,20 +606,6 @@ function buildLicenseCards(licenses) {
     })
     .join('')
 }
-            <div class="admin-compact-license-meta-item">
-              <span>Server URL</span>
-              <strong>${escapeHtml(formatField(license.serverUrl))}</strong>
-            </div>
-            <div class="admin-compact-license-meta-item">
-              <span>Updated</span>
-              <strong>${escapeHtml(formatDate(license.updatedAt))}</strong>
-            </div>
-          </div>
-        </article>
-      `
-    })
-    .join('')
-}
 
 function renderCustomerProfile(customer) {
   if (!customerProfileDetail) {
@@ -372,6 +619,7 @@ function renderCustomerProfile(customer) {
     <div class="detail-field"><span>Email</span><strong>${escapeHtml(customer.email)}</strong></div>
     <div class="detail-field"><span>Phone</span><strong>${escapeHtml(customer.phone)}</strong></div>
     <div class="detail-field"><span>Company</span><strong>${escapeHtml(customer.companyName)}</strong></div>
+    <div class="detail-field"><span>Max Licenses</span><strong>${customer.maxLicenses || 1}</strong></div>
     <div class="detail-field"><span>Status</span><strong>${escapeHtml(customer.isActive ? 'Active' : 'Pending')}</strong></div>
     <div class="detail-field"><span>Created</span><strong>${escapeHtml(formatDate(customer.createdAt))}</strong></div>
     <div class="detail-field"><span>Activated</span><strong>${escapeHtml(formatDate(customer.activatedAt))}</strong></div>
@@ -409,6 +657,10 @@ function renderCustomerEditForm(customer) {
         <label>
           <span class="table-subtitle">Phone</span>
           <input name="phone" type="tel" value="${escapeHtml(customer.phone)}" required />
+        </label>
+        <label>
+          <span class="table-subtitle">Max Licenses</span>
+          <input name="maxLicenses" type="number" value="${customer.maxLicenses || 1}" min="1" required />
         </label>
       </div>
       <p class="muted detail-form-note">Email address and phone number are validated before saving.</p>
@@ -651,7 +903,7 @@ async function confirmDeleteCustomer() {
     }
 
     showMessage(payload.message, 'success')
-    await loadDashboard()
+    await loadActiveAdminPage()
   } catch (error) {
     showMessage(error.message, 'error')
 
@@ -666,36 +918,71 @@ async function confirmDeleteCustomer() {
   }
 }
 
-async function loadDashboard() {
+async function ensureAdminSession() {
+  const me = await requestJson('/api/admin/me')
+
+  if (!me.authenticated) {
+    window.location.href = '/admin/login'
+    return null
+  }
+
+  if (adminIdentity) {
+    adminIdentity.textContent = me.admin?.email || '-'
+  }
+
+  return me
+}
+
+async function loadDashboardPage() {
+  const payload = await requestJson('/api/admin/dashboard')
+  dashboardCustomers = payload.customers || []
+
+  renderSummary(payload.summary)
+
+  if (!dashboardCustomers.some((customer) => customer.id === selectedCustomerId)) {
+    resetCustomerDetail()
+  }
+
+  renderCustomerTable()
+
+  if (selectedCustomerId) {
+    await loadCustomerDetail(selectedCustomerId, customerDetailMode)
+  } else {
+    resetCustomerDetail()
+  }
+}
+
+async function loadContactMessagesPage() {
+  const payload = await requestJson('/api/admin/contact-messages')
+  dashboardContactMessages = payload.contactMessages || []
+  renderContactMessageTable()
+}
+
+async function loadDownloadReleasePage() {
+  await loadDownloadReleaseSettings()
+}
+
+async function loadActiveAdminPage() {
   hideMessage()
 
   try {
-    const me = await requestJson('/api/admin/me')
+    const me = await ensureAdminSession()
 
-    if (!me.authenticated) {
-      window.location.href = '/admin/login'
+    if (!me) {
       return
     }
 
-    if (adminIdentity) {
-      adminIdentity.textContent = me.admin?.email || '-'
+    if (adminPage === 'contact-messages') {
+      await loadContactMessagesPage()
+      return
     }
 
-    const payload = await requestJson('/api/admin/dashboard')
-    dashboardCustomers = payload.customers || []
-    renderSummary(payload.summary)
-
-    if (!dashboardCustomers.some((customer) => customer.id === selectedCustomerId)) {
-      resetCustomerDetail()
+    if (adminPage === 'download-release') {
+      await loadDownloadReleasePage()
+      return
     }
 
-    renderCustomerTable()
-
-    if (selectedCustomerId) {
-      await loadCustomerDetail(selectedCustomerId, customerDetailMode)
-    } else {
-      resetCustomerDetail()
-    }
+    await loadDashboardPage()
   } catch (error) {
     if (error.status === 401) {
       window.location.href = '/admin/login'
@@ -726,6 +1013,10 @@ if (adminLoginForm) {
       })
 
       adminLoginForm.reset()
+      
+      // Wait 100ms to ensure session is persisted before redirect
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       window.location.href = '/admin'
     } catch (error) {
       showMessage(error.message, 'error')
@@ -792,9 +1083,51 @@ if (customerTableBody) {
   })
 }
 
+if (contactMessageTableBody) {
+  contactMessageTableBody.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) {
+      return
+    }
+
+    const viewButton = event.target.closest('[data-view-contact-message-id]')
+    if (viewButton instanceof HTMLElement) {
+      const contactMessageId = Number.parseInt(viewButton.dataset.viewContactMessageId || '', 10)
+
+      if (!Number.isFinite(contactMessageId)) {
+        showMessage('Contact message detail could not be opened.', 'error')
+        return
+      }
+
+      const message = dashboardContactMessages.find((item) => item.id === contactMessageId)
+
+      if (!message) {
+        showMessage('Contact message could not be found.', 'error')
+        return
+      }
+
+      openContactMessageModal(message)
+      return
+    }
+
+    const deleteButton = event.target.closest('[data-delete-contact-message-id]')
+    if (deleteButton instanceof HTMLElement) {
+      const contactMessageId = Number.parseInt(deleteButton.dataset.deleteContactMessageId || '', 10)
+
+      if (!Number.isFinite(contactMessageId)) {
+        showMessage('Contact message could not be deleted.', 'error')
+        return
+      }
+
+      deleteContactMessage(contactMessageId).catch(() => {
+        showMessage('Contact message could not be deleted.', 'error')
+      })
+    }
+  })
+}
+
 if (adminRefreshButton) {
   adminRefreshButton.addEventListener('click', () => {
-    loadDashboard()
+    loadActiveAdminPage()
   })
 }
 
@@ -867,6 +1200,28 @@ if (saveCustomerButton) {
   saveCustomerButton.addEventListener('click', () => {
     saveCustomerChanges().catch(() => {
       showMessage('Customer could not be updated.', 'error')
+    })
+  })
+}
+
+if (downloadReleaseForm) {
+  downloadReleaseForm.addEventListener('submit', (event) => {
+    event.preventDefault()
+    saveDownloadReleaseSettings().catch(() => {
+      showMessage('Download release settings could not be updated.', 'error')
+    })
+  })
+}
+
+if (deleteContactMessageButton) {
+  deleteContactMessageButton.addEventListener('click', () => {
+    if (!currentContactMessage) {
+      showMessage('Contact message could not be found.', 'error')
+      return
+    }
+
+    deleteContactMessage(currentContactMessage.id).catch(() => {
+      showMessage('Contact message could not be deleted.', 'error')
     })
   })
 }
@@ -983,10 +1338,22 @@ document.addEventListener('click', (event) => {
   }
 })
 
+document.addEventListener('click', (event) => {
+  if (!(event.target instanceof Element)) {
+    return
+  }
+
+  const closeButton = event.target.closest('[data-close-contact-message-modal]')
+  if (closeButton) {
+    closeContactMessageModal()
+  }
+})
+
 // Close modal on Escape key
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     closeEditLicenseModal()
+    closeContactMessageModal()
   }
 })
 
@@ -1008,8 +1375,11 @@ document.addEventListener('click', (event) => {
 })
 
 if (adminIdentity) {
-  resetCustomerDetail()
-  loadDashboard()
+  if (adminPage === 'dashboard') {
+    resetCustomerDetail()
+  }
+
+  loadActiveAdminPage()
 }
 
 // Backend version in footer

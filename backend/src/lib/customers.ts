@@ -27,6 +27,7 @@ type CustomerRow = {
   created_at: string
   updated_at: string
   activated_at: string | null
+  max_licenses: number
 }
 
 export type PublicCustomer = {
@@ -40,6 +41,7 @@ export type PublicCustomer = {
   isActive: boolean
   createdAt: string
   activatedAt: string | null
+  maxLicenses: number
 }
 
 export type RegisterInput = {
@@ -81,6 +83,7 @@ function toPublicCustomer(customer: CustomerRow): PublicCustomer {
     isActive: customer.is_active === 1,
     createdAt: customer.created_at,
     activatedAt: customer.activated_at,
+    maxLicenses: customer.max_licenses,
   }
 }
 
