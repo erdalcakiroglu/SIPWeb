@@ -1,0 +1,19 @@
+node_modules/
+.wrangler/
+dist/
+
+# Windows ayrılmış aygıt adı — kazara oluşmuş, git index'leyemez
+NUL
+
+# Cloudflare local state (D1/R2/cache)
+.wrangler/state/
+
+# Hassas: secret'lar wrangler.toml [vars]'ta DEĞİL, `wrangler secret put` ile saklanır
+.dev.vars
+.env
+
+# Yedekler / kurulum paketleri / lisans dosyaları
+*.sql
+*.msi
+*.lic
+*.pem

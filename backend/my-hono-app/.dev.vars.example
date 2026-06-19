@@ -1,0 +1,21 @@
+# Yerel geliştirme secret'ları — bu dosyayı `.dev.vars` olarak kopyalayıp doldur.
+# `.dev.vars` gitignore'dadır; ASLA commit etme.
+# Production'da bunlar `wrangler secret put <AD>` ile ayarlanır.
+
+# Lisans imzalama (Ed25519 PKCS8 PEM). Tek satıra sıkıştır, \n kullan.
+LICENSE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+
+# JWT imzalama secret'ları (uzun, rastgele)
+ADMIN_JWT_SECRET=""
+PORTAL_JWT_SECRET=""
+
+# Stripe
+STRIPE_SECRET_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+
+# SMTP (şifre sıfırlama / aktivasyon e-postaları)
+SMTP_HOST=""
+SMTP_PORT="587"
+SMTP_USER=""
+SMTP_PASS=""
+SMTP_FROM="no-reply@sqlperformance.ai"

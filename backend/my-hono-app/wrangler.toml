@@ -1,0 +1,33 @@
+name = "sqlperformance-api"
+main = "index.ts"
+compatibility_date = "2026-05-01"
+assets = { directory = "../public", binding = "ASSETS" }
+
+routes = [
+  { pattern = "admin.sqlperformance.ai/*", zone_name = "sqlperformance.ai" },
+  { pattern = "portal.sqlperformance.ai/*", zone_name = "sqlperformance.ai" },
+  { pattern = "license.sqlperformance.ai/*", zone_name = "sqlperformance.ai" },
+  { pattern = "downloads.sqlperformance.ai/*", zone_name = "sqlperformance.ai" }
+]
+
+# Public key güvenlidir, var olarak kalabilir (NOT: anahtar rotate edilince güncelle).
+[vars]
+LICENSE_PUBLIC_KEY = """
+-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAQAKhOGBZLItZGNkTOJkh7MC4n4vchSUFa21XdmrQUSg=
+-----END PUBLIC KEY-----
+"""
+
+# LICENSE_PRIVATE_KEY artık plaintext DEĞİL — Cloudflare secret olarak saklanır:
+#   wrangler secret put LICENSE_PRIVATE_KEY
+# Kod c.env.LICENSE_PRIVATE_KEY ile okur; secret'lar da c.env üzerinden gelir.
+# Yerel geliştirme için: .dev.vars dosyasına yaz (gitignore'da).
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sqlperformanceai"
+database_id = "e496dd9d-ad1e-4c4f-9de0-e6e3201ae800"
+
+[[r2_buckets]]
+binding = "DOWNLOADS_BUCKET"
+bucket_name = "downloads"

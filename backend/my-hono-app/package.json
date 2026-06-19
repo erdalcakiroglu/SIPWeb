@@ -1,0 +1,8 @@
+{
+  "name": "sqlperf-license-api",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "hono": "^4.12.18"
+  }
+}
